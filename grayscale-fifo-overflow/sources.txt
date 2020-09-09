@@ -1,0 +1,12 @@
+C:./lib/BBB_cci_mpf/hw/sim/cci_mpf_sim_addenda.txt
+
++incdir+./rtl
+
+rtl/grayscale_pkg.sv
+rtl/grayscale.sv
+rtl/grayscale_csr.sv
+rtl/grayscale_fifo.sv
+rtl/grayscale_requestor.sv
+rtl/ccip_std_afu.sv
+
+grayscale.json
