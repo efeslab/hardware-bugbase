@@ -1,9 +1,0 @@
-//
-// This file has been generated automatically by afu_platform_config.
-// Do not edit it by hand.
-//
-// Platform: a10_gx_intg_xeon_skx
-// AFU top-level interface: ccip_std_afu
-//
-
--F /home/jcma/.local/share/opae/platform/platform_if/sim/platform_if_includes.txt

@@ -126,11 +126,11 @@ interface cci_mpf_if
     //
     // ====================================================================
 
-`ifdef CCI_SIMULATION
-
-`include "cci_mpf_if_dbg.vh"
-
-`endif
+//`ifdef CCI_SIMULATION
+//
+//`include "cci_mpf_if_dbg.vh"
+//
+//`endif
 
 endinterface
 

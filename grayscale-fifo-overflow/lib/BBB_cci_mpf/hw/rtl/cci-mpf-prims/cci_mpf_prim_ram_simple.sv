@@ -336,19 +336,22 @@ module cci_mpf_prim_ram_simple_base
         .wren_b(1'b0),
 
         // Legally unconnected ports -- get rid of lint errors
-        .rden_b(),
+        // For verilator:
+        //   When using verilator, we use a version of simlib
+        //   where all tri0 and tri1 are transferred to logic.
+        .rden_b(1'b1),
         .data_b(),
         .clock1(),
-        .clocken0(),
-        .clocken1(),
-        .clocken2(),
-        .clocken3(),
-        .aclr0(),
-        .aclr1(),
-        .byteena_a(),
-        .byteena_b(),
-        .addressstall_a(),
-        .addressstall_b(),
+        .clocken0(1'b1),
+        .clocken1(1'b1),
+        .clocken2(1'b1),
+        .clocken3(1'b1),
+        .aclr0(1'b0),
+        .aclr1(1'b0),
+        .byteena_a(1'b1),
+        .byteena_b(1'b1),
+        .addressstall_a(1'b0),
+        .addressstall_b(1'b0),
         .q_a(),
         .eccstatus()
         );

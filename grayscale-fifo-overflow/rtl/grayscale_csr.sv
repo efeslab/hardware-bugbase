@@ -72,7 +72,7 @@ module grayscale_csr
       case (mmio_req_hdr.address)
         HC_DEVICE_HEADER: // AFU DFH (device feature header)
           begin
-            tx_mmio_channel.data <= 'h1000000004000000;
+            tx_mmio_channel.data <= 64'h1000000004000000;
           end
 
         // AFU_ID_L

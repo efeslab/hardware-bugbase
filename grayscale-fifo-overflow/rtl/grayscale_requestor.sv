@@ -52,8 +52,7 @@ module grayscale_requestor
     else begin
       not_full_q <= not_full;
       if (~not_full_q && enq_en) begin
-        $display("fifo overflow");
-        $finish;
+        $error("grayscale_requestor: fifo overflow");
       end
     end
   end
@@ -324,7 +323,7 @@ module grayscale_requestor
       S_WR_DATA:
         begin
           if (wr_offset == hc_buffer[0].size) begin
-            wr_next_state <= S_WR_FINISH_1;
+            wr_next_state = S_WR_FINISH_1;
           end
         end
 
