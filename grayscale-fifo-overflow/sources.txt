@@ -2,11 +2,8 @@
 
 ccip/device_if/ccip_if_pkg.sv
 
-+incdir+./altera
-altera/ALTERA_DEVICE_FAMILIES.v
-altera/ALTERA_MF_MEMORY_INITIALIZATION.v
-altera/altsyncram_body.v
-altera/altsyncram.v
+../common/altera/220model.v
+../common/altera/altera_mf.v
 
 +incdir+./rtl
 +incdir+./ccip
