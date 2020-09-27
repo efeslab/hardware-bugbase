@@ -141,13 +141,15 @@ int main(int argc, char **argv) {
                     long_term.erase(long_term.begin()+i);
                     i--;
                 } else {
-                    if (almfull_ent->channel == 0) {
-                        tb->c0TxAlmFull = 1;
-                    } else if (almfull_ent->channel == 1) {
-                        tb->c1TxAlmFull = 1;
-                    } else {
-                        cerr << "invalid channel" << endl;
-                        abort();
+                    if (almfull_ent->timestamp <= timestamp) {
+                        if (almfull_ent->channel == 0) {
+                            tb->c0TxAlmFull = 1;
+                        } else if (almfull_ent->channel == 1) {
+                            tb->c1TxAlmFull = 1;
+                        } else {
+                            cerr << "invalid channel" << endl;
+                            abort();
+                        }
                     }
                 }
             }

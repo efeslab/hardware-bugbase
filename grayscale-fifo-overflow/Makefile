@@ -23,7 +23,7 @@ TEST_CXX_FILES?=$(shell find $(TEST_DIR) -name '*.cpp')
 TEST_RTL_SIMLIB?=$(RTL_WORK_DIR)/V$(TOP_MODULE)__ALL.a
 TEST_BIN?= grayscale_test
 
-all: verilator sw
+all: clean verilator sw
 
 verilator:
 	$(VERILATOR) $(VERILATOR_OPT) -F $(RTL_SOURCES) -top-module $(TOP_MODULE) --Mdir $(RTL_WORK_DIR)
@@ -36,7 +36,8 @@ clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
 
 sim:
+	@echo "BUG 1: Buffer Overflow"
 	./$(TEST_BIN)
 
 wave:
-	gtkwave *.fst
+	gtkwave *.fst >/dev/null 2>/dev/null &

@@ -2,4 +2,4 @@ work/
 *.fst.hier
 *.fst
 *.vcd
-grayscale_test
+grayscale_mux4_test
