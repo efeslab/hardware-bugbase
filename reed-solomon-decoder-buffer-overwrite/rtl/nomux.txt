@@ -1,0 +1,5 @@
+QI:../par/cci_base_par_files.qsf
+SI:../sim/base_addenda.txt
+
+C:sources.txt
+reed_solomon_decoder.json
