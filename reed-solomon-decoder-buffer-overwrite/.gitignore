@@ -1,0 +1,5 @@
+work/
+*.fst.hier
+*.fst
+*.vcd
+grayscale_test
