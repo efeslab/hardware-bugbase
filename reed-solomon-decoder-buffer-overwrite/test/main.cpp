@@ -207,6 +207,9 @@ int main(int argc, char **argv) {
             if (tb->c0Tx_valid) {
                 t_ccip_c0tx_MemHdr hdr;
                 memcpy(&hdr, &tb->c0Tx_hdr, sizeof(hdr));
+
+                cout << "c0tx received, addr=" << std::hex << hdr.address << endl;
+
                 bool matched = false;
 
                 for (int i = 0; i < c0tx_listen.size(); i++) {
@@ -272,6 +275,7 @@ int main(int argc, char **argv) {
         zeroize_extra_bits(tb);
 
         tb->pClk = 1;
+        tb->pClkDiv2 = !tb->pClkDiv2;
         tb->eval();
         trace->dump(timestamp);
         sc_time_step();

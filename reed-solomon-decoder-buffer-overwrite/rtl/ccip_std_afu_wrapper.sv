@@ -7,6 +7,7 @@ module ccip_std_afu_wrapper
 (
     // CCI-P Clocks and Resets, we only need 400MHz
     input logic pClk,
+    input logic pClkDiv2,
     input logic pck_cp2af_softReset,
 
     // AlmFull
@@ -45,6 +46,7 @@ module ccip_std_afu_wrapper
     /* verilator lint_off PINMISSING */
     ccip_std_afu ccip_std_afu(
         .pClk(pClk),
+        .pClkDiv2(pClkDiv2),
         .pck_cp2af_softReset(pck_cp2af_softReset),
         .pck_cp2af_sRx(ccip_rx),
         .pck_af2cp_sTx(ccip_tx));

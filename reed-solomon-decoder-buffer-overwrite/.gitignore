@@ -2,4 +2,4 @@ work/
 *.fst.hier
 *.fst
 *.vcd
-grayscale_test
+reed_solomon_decoder_test

@@ -196,9 +196,19 @@ void parse_config(string &config,
                             abort();
                         }
                     } else if (key == "val") {
-                        assert(val == "any");
-                        for (int k = 0; k < 8; k++) {
-                            ent->value[k] = rand();
+                        if (val == "any") {
+                            for (int k = 0; k < 8; k++) {
+                                ent->value[k] = rand();
+                            }
+                        } else {
+                            assert(val.length() == 128);
+                            string val_split[8];
+                            for (int k = 0; k < 8; k++) {
+                                string val64bit = val.substr(k*16, 16);
+                                stringstream ss;
+                                ss << std::hex << val64bit;
+                                ss >> ent->value[7-k];
+                            }
                         }
                     } else {
                         cerr << "unsupported argument" << endl;

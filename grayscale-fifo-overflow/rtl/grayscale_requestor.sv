@@ -44,16 +44,9 @@ module grayscale_requestor
     .dec_counter (dec_counter)
   );
 
-  logic not_full_q;
   always_ff@(posedge clk) begin
-    if (reset) begin
-      not_full_q <= 0;
-    end
-    else begin
-      not_full_q <= not_full;
-      if (~not_full_q && enq_en) begin
-        $error("grayscale_requestor: fifo overflow");
-      end
+    if (~not_full && enq_en) begin
+      $error("grayscale_requestor: fifo overflow");
     end
   end
 
