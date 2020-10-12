@@ -2,4 +2,4 @@ work/
 *.fst.hier
 *.fst
 *.vcd
-grayscale_test
+sha512_test
