@@ -1,0 +1,4 @@
++define+FORMAL
+rtl/faxil_slave.v
+rtl/trace_tb1.v
+rtl/xlnxdemo.v

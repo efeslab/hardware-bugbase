@@ -1,0 +1,6 @@
+work/
+*.fst.hier
+*.fst
+*.vcd
+*_test
+*_work
