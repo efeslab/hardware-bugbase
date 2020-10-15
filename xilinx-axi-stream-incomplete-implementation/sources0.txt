@@ -1,0 +1,4 @@
++define+FORMAL
+rtl/faxis_master.v
+rtl/trace_tb.v
+rtl/xlnxstream_2018_3.v

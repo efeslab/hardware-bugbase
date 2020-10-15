@@ -156,10 +156,13 @@ module faxil_slave #(
 	assign	axi_rd_err = (axi_rd_ack)&&(i_axi_rresp[1]);
 	assign	axi_wr_err = (axi_wr_ack)&&(i_axi_bresp[1]);
 
+`ifdef VERILATOR
     function void empty(input int i);
     endfunction
-
-`define	SLAVE_ASSUME	empty
+    `define	SLAVE_ASSUME	empty
+`else
+    `define SLAVE_ASSUME    assume
+`endif
 `define	SLAVE_ASSERT	assert
 
 	//
