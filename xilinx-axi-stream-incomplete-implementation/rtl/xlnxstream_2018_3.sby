@@ -1,0 +1,23 @@
+[tasks]
+prf
+cvr
+
+[options]
+prf: mode prove
+prf: depth 120
+prf: expect FAIL
+cvr: mode cover
+cvr: depth 60
+
+[engines]
+smtbmc
+
+[script]
+read -formal faxis_master.v
+read -formal xlnxstream_2018_3.v
+prep -top xlnxstream_2018_3
+chformal -assert -skip 2
+
+[files]
+faxis_master.v
+xlnxstream_2018_3.v
