@@ -1,5 +1,7 @@
-work/
+cobj_dir/
+cv32e40p/
 *.fst.hier
 *.fst
 *.vcd
-core-v-verif/
+testbench_verilator
+memory_dump.bin
