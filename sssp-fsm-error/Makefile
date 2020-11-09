@@ -37,7 +37,7 @@ clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
 
 sim:
-	@echo "BUG 1: Buffer Overflow"
+	@echo "BUG 1: FSM design error"
 	./$(TEST_BIN)
 
 wave:
