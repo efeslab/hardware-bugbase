@@ -15,6 +15,9 @@ There are two bugs in this directory. These bugs are discovered by [zipcpu](http
 #### [xilinx-axi-stream-incomplete-implementation](https://github.com/efeslab/hardware-bugbase/tree/master/xilinx-axi-stream-incomplete-implementation)
 This bug is discovered by [zipcpu](https://zipcpu.com/dsp/2020/04/20/axil2axis.html) with formal methods. Like the previous one, it is in Xilinx's template implementation of AXI-stream interface, which causes data loss.
 
+#### [sssp-fsm-error](https://github.com/efeslab/hardware-bugbase/tree/master/sssp-fsm-error)
+This bug is a FSM design error in a [single source shortest path](https://github.com/efeslab/optimus-intel-fpga-bbb/tree/master/samples/tutorial/vai_sssp) graph accelerator. This accelerator firstly reads graph vertices from memory, then reads edges. Due to a design error, the circuit may consider the first edge as a vertices.
+
 ### Buffer Overflow
 #### [reed-solomon-decoder-buffer-overwrite](https://github.com/efeslab/hardware-bugbase/tree/master/reed-solomon-decoder-buffer-overwrite)
 This bug is an overflow of a write-combining buffer in the example implementation of [reed solomon decoder](https://github.com/omphardcloud/hardcloud/tree/master/samples/reed_solomon_decoder) of [HardCloud](https://omphardcloud.github.io/). The reed solomon decoder core generate 1 byte at a time, and when 64 bytes are generated, the DMA logic writes it to memory as a cacheline. However, when CCIP tx channel 1 is almfull for a long time, this buffer may be overflow.
@@ -28,13 +31,15 @@ This bug is a buffer overflow in an example implementation of [grayscale image p
 
 ### Integer overflow
 #### [dblclockftt-integer-overflow](https://github.com/efeslab/hardware-bugbase/tree/master/dblclockfft-integer-overflow) Bug 2
-This bug is originated from https://github.com/ZipCPU/dblclockfft/issues/5. According to the discussion, it's a integer overflow problem which occurs inside the convround module. Due to the integer overflow, the fft core does not always generate the correct result.
+This bug is originated from https://github.com/ZipCPU/dblclockfft/issues/5. This project is a [generic pipelined FFT core generator](https://github.com/ZipCPU/dblclockfft) designed by [zipcpu](https://zipcpu.com). According to the discussion, it's a integer overflow problem which occurs inside the convround module. Due to the integer overflow, the fft core does not always generate the correct result.
 
 
 
 ### Interface issues between modules
 
 ### Misindexing
+#### [fadd-misindexing](https://github.com/efeslab/hardware-bugbase/tree/master/fadd-misindexing)
+This bug is a misindexing provided by Brendan West <westbl@umich.edu>. At the buggy place, the correct index is `N-E-1`, and the buggy index is `N-E`.
 
 ### Multi-path merge problem
 
