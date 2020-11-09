@@ -1,7 +1,9 @@
 # A Hardware Bug Database
-### Bit Splitting
-For example, sometimes it's not correct to assign a 25-bit wire to a 14-bit one.
+## Run the Simulation
+In each bug directory, use `make` to build the circuit, and use `make sim` to run the simulation.
 
+## Types of Bugs
+### Bit Splitting
 #### [sha512-valid-uncleared](https://github.com/efeslab/hardware-bugbase/blob/master/sha512-valid-uncleared/Makefile) Bug 2
 This bug is a bit splitting problem in the example implementation of [SHA512](https://github.com/omphardcloud/hardcloud/tree/master/samples/sha512) of [HardCloud](https://omphardcloud.github.io/) and we don't have a testbench for it. In this bug, a 64-bit byte address (BA) is converted to a 42-bit cacheline address (CA). The correct convertion is `int42(BA >> 6)`, the buggy code is `int42(BA) >> 6`, which causes some bits in the byte address being ignored.
 
@@ -38,21 +40,27 @@ This bug is a buffer overflow in an example implementation of [grayscale image p
 #### [dblclockftt-integer-overflow](https://github.com/efeslab/hardware-bugbase/tree/master/dblclockfft-integer-overflow) Bug 2
 This bug is originated from https://github.com/ZipCPU/dblclockfft/issues/5. This project is a [generic pipelined FFT core generator](https://github.com/ZipCPU/dblclockfft) designed by [zipcpu](https://zipcpu.com). According to the discussion, it's a integer overflow problem which occurs inside the convround module. Due to the integer overflow, the fft core does not always generate the correct result.
 
-
-
 ### Interface Issues Between Modules
+No such bug yet.
 
 ### Misindexing
 #### [fadd-misindexing](https://github.com/efeslab/hardware-bugbase/tree/master/fadd-misindexing)
 This bug is a misindexing provided by Brendan West <westbl@umich.edu>. At the buggy place, the correct index is `N-E-1`, and the buggy index is `N-E`.
 
 ### Multi-Path Merge Problem
+#### [sdspi-path-merge](https://github.com/efeslab/hardware-bugbase/tree/master/sdspi-path-merge)
+This is a multi-path merge problem in a [SD card controller](https://github.com/ZipCPU/sdspi) designed by [zipcpu](https://zipcpu.com). It was fixed in [this](https://github.com/ZipCPU/sdspi/commit/e3d46ab24f79b62544fb11a49de77504bbdab83f) commit. In buggy code, the output valid signal is a cycle a head of output data signal, causing the first DWORD read being repeated twice while the last one being ignored.
 
 ### Dead Lock
+#### [sdspi-startup-deadlock](https://github.com/efeslab/hardware-bugbase/tree/master/sdspi-startup-deadlock)
+This is a deadlock problem in a [SD card controller](https://github.com/ZipCPU/sdspi) designed by [zipcpu](https://zipcpu.com). During the bootup of the circuit, a counter for clock splitting never reduces to zero, which prevents the generation of sdcard clock.
 
 ### Singed/Unsigned Inconsistency
+No such bug yet.
 
 ### Endian Problem
+#### [sdspi-endian](https://github.com/efeslab/hardware-bugbase/tree/master/sdspi-endian)
+This is an endian problem in a [SD card controller](https://github.com/ZipCPU/sdspi) designed by [zipcpu](https://zipcpu.com). The endian of SD card write and read is not consistent.
 
 ### Back Pressure
 #### [reed-solomon-decoder-buffer-overwrite](https://github.com/efeslab/hardware-bugbase/tree/master/reed-solomon-decoder-buffer-overwrite)
