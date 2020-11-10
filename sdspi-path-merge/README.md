@@ -1,4 +1,4 @@
-Source: https://github.com/ZipCPU/sdspi/issues/2
+Source: https://github.com/ZipCPU/sdspi/commit/e3d46ab24f79b62544fb11a49de77504bbdab83f
 Code: https://github.com/ZipCPU/sdspi/commit/53e9a2bf66b8185e3f856a21f1d7c2d672f0da2b
 
 # SD-Card controller, using a shared SPI interface
