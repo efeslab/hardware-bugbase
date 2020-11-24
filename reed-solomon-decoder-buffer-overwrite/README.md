@@ -18,6 +18,10 @@ module test (
         input logic o_almfull
 );
 
+        always_ff @(posedge clk) begin
+                i_request <= !o_almfull;
+        end
+
         logic weird_out;
         logic weird_out_valid;
 
