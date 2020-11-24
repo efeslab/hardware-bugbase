@@ -2,7 +2,8 @@
 BBB: https://github.com/efeslab/optimus-intel-fpga-bbb/tree/d639624652e4cf1173677a3e8bb7fc16f53ae433
 
 ### Synthetic Code
-```module weird_module(
+```verilog
+module weird_module(
 	input logic clk,
 	input logic almfull,
 	output logic [63:0] data,
