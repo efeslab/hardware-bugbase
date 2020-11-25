@@ -54,6 +54,8 @@ module test (
                 end
         end
 
+        // If the write channel is full, and we keep sending read packets, we will eventially overflow the fifo.
+        // The fix is also stop reading while the write buffer is almfull.
         always_ff @(posedge clk) begin
                 if (~wrch_almfull) begin
                         wrreq <= enq_data;
