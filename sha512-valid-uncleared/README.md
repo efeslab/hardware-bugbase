@@ -34,6 +34,7 @@ always_ff @(posedge clk) begin
       DO_RESULT:
         valid <= 1;
         data <= get_result_summary();
+        // The valid bit will still be 1 in the next cycle, because DO_IDLE does not clear it.
     endcase
   end
 end
