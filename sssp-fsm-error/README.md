@@ -31,6 +31,7 @@ module test (
     end
 
     always_ff @(posedge clk) begin
+        // The following code may "do vertex" three times, if the second and third 'valid' come in adjacent cycles.
         if (valid) begin
             case (state)
                 DO_VERTEX: $display("do vertex!");
