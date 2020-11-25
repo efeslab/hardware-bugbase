@@ -19,6 +19,8 @@ module test(
 
         initial fifo_addr = 0; // in real world, there's a complex protocol to reset it
         always @(posedge clk) begin
+                // fifo_addr takes two cycles to be updated, while the latency of rd_ack is one cycle.
+                // As a result, the first two reads will be the same.
                 if (rd_req)
                         fifo_addr <= fifo_addr + 1;
         end
