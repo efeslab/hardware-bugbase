@@ -76,6 +76,9 @@ module test (
 		else
 			balance <= balance;
 
+		// Here, balance >= 5 indicates that the circuit will send out at most 7 packets after almfull is asserted.
+		// However, there may be at most 6 extra packets that needs to be stored in the buffer, whose size is 5. 
+		// As a result, this buffer may be overflowed.
 		if (balance >= 5 && valid) begin
 			buffer[buffer_cnt] <= data;
 			buffer_cnt <= buffer_cnt + 1;
@@ -88,6 +91,8 @@ module test (
 			buffer_cnt <= buffer_cnt - 1;
 		end
 		else begin
+			// When valid is true (i.e., weird_inst has a valid output) and there's anything in the buffer, the
+			// output of weird_inst will be ignored.
 			o_data <= data;
 			o_valid <= valid;
 		end
