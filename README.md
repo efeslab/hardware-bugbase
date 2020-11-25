@@ -75,4 +75,4 @@ We talked about the side buffer previously. When `almfull` is deasserted, it's p
 
 ### Performance Related
 #### [cv32-div-too-long](https://github.com/efeslab/hardware-bugbase/tree/master/cv32-div-too-long)
-This bug is from https://github.com/openhwgroup/cv32e40p/issues/434. The project is as open source RISC-V core from ETHZ called [cv32e40p](https://github.com/openhwgroup/cv32e40p/issues/434). In some special branch combinations, a DIV may take 36 cycles, which is way more than expected.
+This bug is from https://github.com/openhwgroup/cv32e40p/issues/434. The project is as open source RISC-V core from ETHZ called [cv32e40p](https://github.com/openhwgroup/cv32e40p/issues/434). In some special branch combinations, a taken branch followed by a MUL may take 36 cycles, which is way more than expected.
