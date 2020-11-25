@@ -1,5 +1,43 @@
+### Source
 Source: https://github.com/ZipCPU/sdspi/commit/e3d46ab24f79b62544fb11a49de77504bbdab83f
+
 Code: https://github.com/ZipCPU/sdspi/commit/53e9a2bf66b8185e3f856a21f1d7c2d672f0da2b
+
+### Synthetic Code
+```verilog
+module test(
+        input logic clk,
+
+        input logic rd_req,
+        output logic rd_ack,
+        output logic [63:0] rd_data
+);
+
+        logic [63:0] fifo_mem[63:0];
+        logic [63:0] fifo_reg;
+        logic [5:0] fifo_addr;
+
+        initial fifo_addr = 0; // in real world, there's a complex protocol to reset it
+        always @(posedge clk) begin
+                if (rd_req)
+                        fifo_addr <= fifo_addr + 1;
+        end
+
+        always @(posedge clk) begin
+                fifo_reg <= fifo_mem[fifo_addr];
+        end
+
+        always @(posedge clk) begin
+                if (rd_req) begin
+                        rd_ack <= 1;
+                        rd_data <= fifo_reg;
+                end
+                else begin
+                        rd_ack <= 0;
+                end
+        end
+endmodule
+```
 
 # SD-Card controller, using a shared SPI interface
 
