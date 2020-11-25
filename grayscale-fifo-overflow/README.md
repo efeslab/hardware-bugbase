@@ -4,7 +4,8 @@ BBB: https://github.com/efeslab/optimus-intel-fpga-bbb/tree/0633e15416a67f49740a
 grayscale: https://github.com/efeslab/hardcloud/tree/549015eaeba4d0d6de92248a2c2a7ddc42785457
 
 ### Synthetic Code
-```module test (
+```verilog
+module test (
         input logic clk,
 
         // read channel
