@@ -21,6 +21,7 @@ module test(
 
         always @(posedge clk) begin
                 // The folloing lines indicate that fifo_mem_0[addr] will be the highest bits of fifo_reg.
+                // As a result, fifo_mem_0 is the highest bits during read but the lowest bits during write.
                 fifo_reg <= {
                         fifo_mem_0[addr],
                         fifo_mem_1[addr],
