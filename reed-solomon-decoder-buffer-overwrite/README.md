@@ -3,7 +3,7 @@ BBB: https://github.com/efeslab/optimus-intel-fpga-bbb/tree/0633e15416a67f49740a
 rsd: https://github.com/efeslab/hardcloud/tree/b40185e13f6d7d7a613218e26913d860c8384130/samples/reed_solomon_decoder
 
 ### Synthetic Bug
-```
+```verilog
 module test (
         input logic clk,
 
@@ -39,6 +39,7 @@ module test (
         initial buffer = 64'h0;
         initial ptr = 6'h0;
 
+        // The buffer may overflow, if o_almfull is always true
         always_ff @(posedge clk) begin
                 if (weird_out_valid) begin
                         buffer[63 - ptr] <= weird_out;
