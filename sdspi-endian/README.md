@@ -20,6 +20,7 @@ module test(
         logic [31:0] fifo_reg;
 
         always @(posedge clk) begin
+                // The folloing lines indicate that fifo_mem_0[addr] will be the highest bits of fifo_reg.
                 fifo_reg <= {
                         fifo_mem_0[addr],
                         fifo_mem_1[addr],
