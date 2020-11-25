@@ -22,6 +22,9 @@ module test(
         initial r_z_counter = 1;
 
         always_ff @(posedge clk) begin
+                // During the startup of the circuit, startup_hold is always true. As a result, this block always falls into
+                // the first if-statement, which prevents r_z_counter to be updated, which prevents o_sclk to be updated, which
+                // prevents startup_hold to be updated.
                 if (startup_hold) begin
                         r_clk_counter <= i_speed;
                         r_z_counter <= (i_speed == 0);
