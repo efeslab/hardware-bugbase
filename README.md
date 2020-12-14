@@ -567,5 +567,8 @@ always @(posedge i_clk)
 
 ## 13. CV32-div-too-long
 
-// circular feedback loop
-
+1. In this CPU, the fetcher assumes that the branch is not taken and fetches instructions right after the branch. Branch decision are made in the EX stage, and when a branch is taken, the pipeline needs to be flushed.
+2. In a very original implementation in 2018, the circuit propagates the instruction (that locates after a taken-branch) from ID to EX and disable register write to prevent side effect.
+3. The implementation in 2 is buggy, because if the instruction right after a taken-branch is a multi-cycle instruction, the EX stage will take a long time to finish, and it will backpressure the ID stage to prevent new instructions from being propagated.
+4. In a fix in 2018, when a branch is taken in EX (which means the instruction in ID is useless), the circuit will propagate a fake single cycle instruction (like a pipeline nop/bubble) to EX. The result of this fix is the code we say in the left side at the bottom of the page.
+5. However, for some reason (e.g., a weird combination of operands), the fix in 4 cannot handle all cases of "multi-cycle instruction followed by a taken branch" correctly (which causes Issue 434). Therefore, the author commits a more fundamental fix (the commit mentioned above). In this fix, when the decoder finds deassert_we_i is 1, it will set afu_en to 0. (In the previous code, alu_en is decided by the instruction being decoded, regardless of deassert_we_i.) As a result, the control flow won't enter the if case in line 1542, and the DIV instruction won't be propagated to EX.
