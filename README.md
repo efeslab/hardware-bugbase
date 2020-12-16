@@ -82,7 +82,7 @@ module test (
     initial count = 0;
 
     always_ff @(posedge clk) begin
-        count <= count + 1;
+        count <= count + valid;
     end
 
     always_ff @(posedge clk) begin
