@@ -1,78 +1,574 @@
-# A Hardware Bug Database
-## Run the Simulation
-In each bug directory, use `make` to build the circuit, and use `make sim` to run the simulation.
+# Bugs with code snippets
 
-## Types of Bugs
-### Bit Splitting
-#### [sha512-valid-uncleared](https://github.com/efeslab/hardware-bugbase/blob/master/sha512-valid-uncleared/Makefile) Bug 2
-This bug is a bit splitting problem in the example implementation of [SHA512](https://github.com/omphardcloud/hardcloud/tree/master/samples/sha512) of [HardCloud](https://omphardcloud.github.io/) and we don't have a testbench for it. In this bug, a 64-bit byte address (BA) is converted to a 42-bit cacheline address (CA). The correct convertion is `int42(BA >> 6)`, the buggy code is `int42(BA) >> 6`, which causes some bits in the byte address being ignored.
+## 1. Uncleared Valid Bit (SHA512)
 
-### Propagation of Unknown Signals
-No such bug yet.
+### Code
 
-### Forget to Set a Bit
-#### [sha512-valid-uncleared](https://github.com/efeslab/hardware-bugbase/blob/master/sha512-valid-uncleared/Makefile) Bug 1
-This is a bug in the example implementation of [SHA512](https://github.com/omphardcloud/hardcloud/tree/master/samples/sha512) of [HardCloud](https://omphardcloud.github.io/). After finishing the computation, the circuit writes a "status memory" indicating the finish of the task. However, the circuit forget to unser the valid bit of the "sending" packet, causing a lot of memory write requests on the same address to be issued.
+```verilog
+typedef enum {
+  DO_IDLE,
+  DO_WORK,
+  DO_RESULT
+ } state_t;
+state_t state;
+ 
+initial state = DO_IDLE;
+always_ff @(posedge clk) begin
+  case (state)
+    DO_IDLE: if (start) state <= DO_WORK;
+    DO_WORK: if (finish) state <= DO_RESULT;
+    DO_RESULT: state <= DO_IDLE;
+  endcase
+end
+ 
+always_ff @(posedge clk) begin
+  if (reset) begin
+    valid <= 0;
+    data <= 0;
+  end
+  else begin
+    case (state)
+      DO_WORK:
+        if (result_valid) begin
+          valid <= 1; data <= get_result();
+        end;
+      DO_RESULT:
+        valid <= 1;
+        data <= get_result_summary();
+        // The valid bit will still be 1 in the next cycle, because DO_IDLE does not clear it.
+    endcase
+  end
+end
+```
 
-### Miss a Corner Case
-#### [xilinx-axi-lite-incomplete-implementation](https://github.com/efeslab/hardware-bugbase/tree/master/xilinx-axi-lite-incomplete-implementation) Bug 1 and Bug 2
-There are two bugs in this directory. These bugs are discovered by [zipcpu](https://zipcpu.com/formal/2018/12/28/axilite.html) with formal methods. These bugs are in Xilinx's template implementation of AXI-lite interface, which causes data loss.
+### Solution
 
-#### [xilinx-axi-stream-incomplete-implementation](https://github.com/efeslab/hardware-bugbase/tree/master/xilinx-axi-stream-incomplete-implementation)
-This bug is discovered by [zipcpu](https://zipcpu.com/dsp/2020/04/20/axil2axis.html) with formal methods. Like the previous one, it is in Xilinx's template implementation of AXI-stream interface, which causes data loss.
+- 
 
-#### [sssp-fsm-error](https://github.com/efeslab/hardware-bugbase/tree/master/sssp-fsm-error)
-This bug is a FSM design error in a [single source shortest path](https://github.com/efeslab/optimus-intel-fpga-bbb/tree/master/samples/tutorial/vai_sssp) graph accelerator. This accelerator firstly reads graph vertices from memory, then reads edges. Due to a design error, the circuit may consider the first edge as a vertices in some rare cases.
+## 2. Assign 64bit to 42bit (SHA512)
 
-### Buffer Overflow
-#### [reed-solomon-decoder-buffer-overwrite](https://github.com/efeslab/hardware-bugbase/tree/master/reed-solomon-decoder-buffer-overwrite)
-This bug is an overflow of a write-combining buffer in the example implementation of [reed solomon decoder](https://github.com/omphardcloud/hardcloud/tree/master/samples/reed_solomon_decoder) of [HardCloud](https://omphardcloud.github.io/). The reed solomon decoder core generate 1 byte at a time, and when 64 bytes are generated, the DMA logic writes it to memory as a cacheline. However, when CCIP tx channel 1 is almfull for a long time, this buffer may be overflow.
-* This bug is also a back pressure related one.
+### Code
 
-#### [sidebuf-overflow-conflict](https://github.com/efeslab/hardware-bugbase/tree/master/sidebuf-overflow-conflict) Bug 2
-This bug is a buffer overflow in [Optimus](https://github.com/optimus-hypervisor), an hypervisor for shared-memory FPGAs. In the CCIP interface, when `almfull` is asserted by the FPGA shell, the user logic can only send 8 extra packets. However, in this case, the logic is too complex that the packet generation may not stop within 8 cycles (each cycle may have an extra packet), so we store the extra packets in a "side buffer" (in order to avoid the latency of a fifo). Unfortunately, this buffer is too small that may overflow. 
+``` verilog
+logic [41:0] left;
+logic [63:0] right;
+assign left = 42'(right) >> 6;
+```
 
-#### [grayscale-fifo-overflow](https://github.com/efeslab/hardware-bugbase/tree/master/grayscale-fifo-overflow)
-This bug is a buffer overflow in an example implementation of [grayscale image processing](https://github.com/omphardcloud/hardcloud/tree/master/samples/grayscale) of [HardCloud](https://omphardcloud.github.io/). When `almfull` is asserted on TxC1 channel (which issues write requests) but not asserted on TxC0 channel (which issues read requests), the circuit will keep reading from the memory, thus overflowing a fifo.
-* This bug is also a back pressure related one.
+### Solution
 
-### Integer Overflow
-#### [dblclockftt-integer-overflow](https://github.com/efeslab/hardware-bugbase/tree/master/dblclockfft-integer-overflow) Bug 2
-This bug is originated from https://github.com/ZipCPU/dblclockfft/issues/5. This project is a [generic pipelined FFT core generator](https://github.com/ZipCPU/dblclockfft) designed by [zipcpu](https://zipcpu.com). According to the discussion, it's a integer overflow problem which occurs inside the convround module. Due to the integer overflow, the fft core does not always generate the correct result.
+- 
 
-### Interface Issues Between Modules
-No such bug yet.
+## 3. Use of outdated valid bit in an FSM design (SSSP)
 
-### Misindexing
-#### [fadd-misindexing](https://github.com/efeslab/hardware-bugbase/tree/master/fadd-misindexing)
-This bug is a misindexing provided by Brendan West <westbl@umich.edu>. At the buggy place, the correct index is `N-E-1`, and the buggy index is `N-E`.
+**i.e., "do vertex" one more time**
 
-### Multi-Path Merge Problem
-#### [sdspi-path-merge](https://github.com/efeslab/hardware-bugbase/tree/master/sdspi-path-merge)
-This is a multi-path merge problem in a [SD card controller](https://github.com/ZipCPU/sdspi) designed by [zipcpu](https://zipcpu.com). It was fixed in [this](https://github.com/ZipCPU/sdspi/commit/e3d46ab24f79b62544fb11a49de77504bbdab83f) commit. In buggy code, the output valid signal is a cycle a head of output data signal, causing the first DWORD read being repeated twice while the last one being ignored.
+### Code
 
-### Dead Lock
-#### [sdspi-startup-deadlock](https://github.com/efeslab/hardware-bugbase/tree/master/sdspi-startup-deadlock)
-This is a deadlock problem in a [SD card controller](https://github.com/ZipCPU/sdspi) designed by [zipcpu](https://zipcpu.com). During the bootup of the circuit, a counter for clock splitting never reduces to zero, which prevents the generation of sdcard clock.
+```verilog
+module test (
+    input logic clk,
+    input logic valid
+);
 
-### Singed/Unsigned Inconsistency
-No such bug yet.
+    typedef enum {
+        DO_VERTEX,
+        DO_EDGE
+    } state_t;
+    state_t state;
+    initial state = DO_VERTEX;
 
-### Endian Problem
-#### [sdspi-endian](https://github.com/efeslab/hardware-bugbase/tree/master/sdspi-endian)
-This is an endian problem in a [SD card controller](https://github.com/ZipCPU/sdspi) designed by [zipcpu](https://zipcpu.com). The endian of SD card write and read is not consistent.
+    logic [15:0] count;
+    initial count = 0;
 
-### Back Pressure
-#### [reed-solomon-decoder-buffer-overwrite](https://github.com/efeslab/hardware-bugbase/tree/master/reed-solomon-decoder-buffer-overwrite)
-* As described above.
+    always_ff @(posedge clk) begin
+        count <= count + valid;
+    end
 
-#### [grayscale-fifo-overflow](https://github.com/efeslab/hardware-bugbase/tree/master/grayscale-fifo-overflow)
-* As described above.
+    always_ff @(posedge clk) begin
+        if (count == 2) begin
+            state <= DO_EDGE;
+        end
+    end
 
-### Signal Conflict
-#### [sidebuf-overflow-conflict](https://github.com/efeslab/hardware-bugbase/tree/master/sidebuf-overflow-conflict) Bug 1
-We talked about the side buffer previously. When `almfull` is deasserted, it's possible that side buffer and user logic both have a packet to send, which may cause a conflict. In this implementation, the packet from user logic is ignored (which is incorrect).
+    always_ff @(posedge clk) begin
+        // The following code may "do vertex" three times, if the second and third 'valid' come in adjacent cycles.
+        // Delaying the 'valid' bit for a cycle can fix this problem.
+        if (valid) begin
+            case (state)
+                DO_VERTEX: $display("do vertex!");
+                DO_EDGE: $display("do edge!");
+            endcase
+        end
+    end
+endmodule
+```
 
-### Performance Related
-#### [cv32-div-too-long](https://github.com/efeslab/hardware-bugbase/tree/master/cv32-div-too-long)
-This bug is from https://github.com/openhwgroup/cv32e40p/issues/434. The project is as open source RISC-V core from ETHZ called [cv32e40p](https://github.com/openhwgroup/cv32e40p/issues/434). In some special branch combinations, a DIV may take 36 cycles, which is way more than expected.
+### Solution
+
+- 
+
+## 4. Buffer overflow (RSD)
+
+### Code
+
+```verilog
+module test (
+        input logic clk,
+
+        // input channel, i_request and i_valid are asynchronize
+        input logic [63:0] i_data,
+        input logic i_valid,
+        output logic i_request,
+
+        // output channel, when o_almfull is asserted, no more than 8 packet can be issued
+        output logic [63:0] o_data,
+        output logic o_valid,
+        input logic o_almfull
+);
+
+        always_ff @(posedge clk) begin
+                i_request <= !o_almfull;
+        end
+
+        logic weird_out;
+        logic weird_out_valid;
+
+        // a weird module, take 64-bit input and generate 1-bit output
+        weird_module weird_inst(
+                .clk(clk),
+                .i_data(i_data),
+                .i_valid(i_valid),
+                .o_data(weird_out), // this is an 1 bit output
+                .o_valid(weird_out_valid)
+        );
+
+        logic [63:0] buffer;
+        logic [5:0] ptr;
+        initial buffer = 64'h0;
+        initial ptr = 6'h0;
+
+        // The buffer may overflow, if o_almfull is always true
+        always_ff @(posedge clk) begin
+                if (weird_out_valid) begin
+                        buffer[63 - ptr] <= weird_out;
+                        ptr <= ptr + 1;
+                end
+        end
+
+        typedef enum {
+                DO_WAIT,
+                DO_OUT
+        } state_t;
+        state_t state;
+        initial state = DO_WAIT;
+
+        always_ff @(posedge clk) begin
+                case(state)
+                        DO_WAIT: if (weird_out_valid && wr_ptr == '1) state <= DO_OUT;
+                        DO_OUT: if (!o_almfull) state <= DO_WAIT;
+                endcase
+        end
+
+        always_ff @(posedge clk) begin
+                case(state)
+                        DO_WAIT: o_valid <= 0;
+                        DO_OUT:
+                                if (!o_almfull) begin
+                                        o_valid <= 1;
+                                        o_data <= buffer;
+                                end
+                                else begin
+                                        o_valid <= 0;
+                                end
+                endcase
+        end
+endmodule
+```
+
+### Solution
+
+- 
+
+## 5. Buffer overflow / signal conflict (Optimus Sidebuf)
+
+### Code
+
+```verilog
+module weird_module(
+	input logic clk,
+	input logic almfull,
+	output logic [63:0] data,
+	output logic valid
+);
+
+	logic [63:0] value;
+	initial value = 0;
+
+	logic almfull_buf[9:0];
+	integer i;
+	always_ff @(posedge clk) begin
+		for (i = 1; i < 10; i++) begin
+			almfull_buf[i] <= almfull_buf[i-1];
+		end
+		almfull_buf[0] <= almfull;
+	end
+
+	always_ff @(posedge clk) begin
+		if (~almfull_buf[9])
+			value <= value + 1;
+	end
+
+	always_ff @(posedge clk) begin
+		if (~almfull_buf[9]) begin
+			data <= value;
+			valid <= 1;
+		end
+		else begin
+			valid <= 0;
+		end
+	end
+endmodule
+
+module test (
+	input logic clk,
+
+	// output channel, when o_almfull is asserted, no more than 8 packet can be issued
+	output logic [63:0] o_data,
+	output logic o_valid,
+	input logic o_almfull
+);
+
+	logic [63:0] data;
+	logic valid;
+	logic almfull;
+	initial almfull = 0;
+	always_ff @(posedge clk) begin
+		almfull <= o_almfull;
+	end
+
+	// This module may or may not generate data output at each cycle.
+	// It takes 11 cycles to respond to the almfull signals.
+	weird_module weird_inst(
+		.clk(clk),
+		.almfull(almfull),
+		.data(data),
+		.valid(valid)
+	);
+
+	logic [4:0] balance;
+	logic [2:0] buffer_cnt, buffer_cnt2;
+	logic [63:0] buffer [4:0];
+
+	always_ff @(posedge clk) begin
+		if (~almfull)
+			balance <= 0;
+		else if (o_valid)
+			balance <= balance + 1;
+		else
+			balance <= balance;
+
+		// Here, balance >= 5 indicates that the circuit will send out at most 7 packets after almfull is asserted.
+		// However, there may be at most 6 extra packets that needs to be stored in the buffer, whose size is 5. 
+		// As a result, this buffer may be overflowed.
+		if (balance >= 5 && valid) begin
+			buffer[buffer_cnt] <= data;
+			buffer_cnt <= buffer_cnt + 1;
+			buffer_cnt2 <= buffer_cnt + 1;
+			o_valid <= 0;
+		end
+		else if (~almfull && buffer_cnt != 0) begin
+			o_data <= buffer[buffer_cnt2 - buffer_cnt];
+			o_valid <= 1;
+			buffer_cnt <= buffer_cnt - 1;
+		end
+		else begin
+			// When valid is true (i.e., weird_inst has a valid output) and there's anything in the buffer, the
+			// output of weird_inst will be ignored.
+			o_data <= data;
+			o_valid <= valid;
+		end
+	end
+
+endmodule
+```
+
+### Solution
+
+- 
+
+## 6. Buffer overflow (Grayscale)
+
+### Code
+
+```verilog
+module test (
+        input logic clk,
+
+        // read channel
+        input logic rdch_almfull,
+        output logic rdreq_valid,
+        output t_rdreq rdreq,
+        input logic rdrsp_valid,
+        input t_rdrsp rdrsp,
+
+        // write channel
+        input logic wrch_almfull,
+        output logic wrreq_valid,
+        output t_wrreq wrreq,
+        input logic wrrsp_valid,
+        input t_wrrsp wrrsp
+);
+
+        t_wrreq enq_data;
+        logic enq_data_valid;
+
+        weird_module weird_inst(
+                .clk(clk),
+                .data_in(rdrsp),
+                .data_in_valid(rdrsp_valid),
+                .data_out(enq_data),
+                .data_out_valid(enq_data_valid)
+        );
+
+        logic deq_en;
+        initial deq_en = 0;
+
+        fifo fifo_inst(
+                .enq_data(enq_data),
+                .enq_en(enq_data_valid),
+                .deq_data(rdreq),
+                .deq_en(deq_en)
+        );
+
+        always_ff @(posedge clk) begin
+                if (~rdch_almfull) begin
+                        rdreq <= get_next_rdreq();
+                        rdreq_valid <= 1;
+                end
+                else begin
+                        rdreq_valid <= 0;
+                end
+        end
+
+        // If the write channel is full, and we keep sending read packets, we will eventially overflow the fifo.
+        // The fix is also stop reading while the write buffer is almfull.
+        always_ff @(posedge clk) begin
+                if (~wrch_almfull) begin
+                        wrreq <= enq_data;
+                        wrreq_valid <= 1;
+                end
+                else begin
+                        wrreq_valid <= 0;
+                end
+        end
+
+endmodule
+```
+
+### Solution
+
+- 
+
+## 7. Path merging (SDSPI)
+
+### Code
+
+```verilog
+module test(
+        input logic clk,
+
+        input logic rd_req,
+        output logic rd_ack,
+        output logic [63:0] rd_data
+);
+
+        logic [63:0] fifo_mem[63:0];
+        logic [63:0] fifo_reg;
+        logic [5:0] fifo_addr;
+
+        initial fifo_addr = 0; // in real world, there's a complex protocol to reset it
+        always @(posedge clk) begin
+                // fifo_addr takes two cycles to be updated, while the latency of rd_ack is one cycle.
+                // As a result, the first two reads will be the same.
+                if (rd_req)
+                        fifo_addr <= fifo_addr + 1;
+        end
+
+        always @(posedge clk) begin
+                fifo_reg <= fifo_mem[fifo_addr];
+        end
+
+        always @(posedge clk) begin
+                if (rd_req) begin
+                        rd_ack <= 1;
+                        rd_data <= fifo_reg;
+                end
+                else begin
+                        rd_ack <= 0;
+                end
+        end
+endmodule
+```
+
+### Solution
+
+- 
+
+## 8. Dead lock (SDSPI)
+
+### Code
+
+```verilog
+module test(
+        input logic clk,
+        output logic o_sclk,
+
+        input logic i_speed // i_speed != 0
+);
+
+        logic startup_hold;
+        initial startup_hold = 1;
+
+        logic [6:0] r_clk_counter;
+        logic r_z_counter;
+        initial r_clk_counter = 0;
+        initial r_z_counter = 1;
+
+        always_ff @(posedge clk) begin
+                // During the startup of the circuit, startup_hold is always true. As a result, this block always falls into
+                // the first if-statement, which prevents r_z_counter to be updated, which prevents o_sclk to be updated, which
+                // prevents startup_hold to be updated.
+                if (startup_hold) begin
+                        r_clk_counter <= i_speed;
+                        r_z_counter <= (i_speed == 0);
+                end
+                else if (!r_z_counter) begin
+                        r_clk_counter <= (r_clk_counter - 1);
+                        r_z_counter <= (r_clk_counter == 1);
+                end
+                else begin
+                        r_clk_counter <= i_speed;
+                        r_z_counter <= 0;
+                end
+        end
+
+        initial o_sclk = 1;
+        always_ff @(posedge clk) begin
+                if (r_z_counter)
+                        o_sclk <= !o_sclk;
+        end
+
+        logic [7:0] startup_counter;
+        initial startup_counter = 64;
+        always_ff @(posedge clk) begin
+                if (startup_hold && !past_sclk && o_sclk) begin
+                        if (|startup_counter)
+                                startup_counter <= startup_counter - 1;
+                        startup_hold <= (startup_counter > 0);
+                end
+        end
+end
+```
+
+## 9. Endian? (SDSPI) (What's the name?)
+
+### Code
+
+```verilog
+module test(
+        input logic clk,
+
+        input logic [3:0] addr;
+
+        input logic rd_req,
+        output logic rd_rsp,
+        output logic [31:0] rd_data,
+
+        input wr_req,
+        input logic [31:0] wr_data
+);
+
+        logic [7:0] fifo_mem_0[15:0], fifo_mem_1[15:0], fifo_mem_2[15:0], fifo_mem_3[15:0];
+        logic [31:0] fifo_reg;
+
+        always @(posedge clk) begin
+                // The folloing lines indicate that fifo_mem_0[addr] will be the highest bits of fifo_reg.
+                // As a result, fifo_mem_0 is the highest bits during read but the lowest bits during write.
+                fifo_reg <= {
+                        fifo_mem_0[addr],
+                        fifo_mem_1[addr],
+                        fifo_mem_2[addr],
+                        fifo_mem_3[addr]
+                };
+
+                if (rd_req) begin
+                        rd_rsp <= 1;
+                        rd_data <= fifo_reg;
+                end
+                else begin
+                        rd_rsp <= 0;
+                end
+        end
+
+        always @(posedge clk) begin
+                if (wr_req) begin
+                        fifo_mem_0[addr] <= wr_data[7:0];
+                        fifo_mem_1[addr] <= wr_data[15:8];
+                        fifo_mem_2[addr] <= wr_data[23:16];
+                        fifo_mem_3[addr] <= wr_data[31:24];
+                end
+        end
+endmodule
+```
+
+### Solution
+
+- 
+
+# Bugs without concrete code snippets
+
+## 10. AXI missing corner cases x3
+
+
+
+## 11. Bit drop influences precision (FFT)
+
+```verilog
+wire    [(OWID-1):0]    truncated_value, rounded_up;
+wire                    last_valid_bit, first_lost_bit;
+
+assign  truncated_value=i_val[(IWID-1-SHIFT):(IWID-SHIFT-OWID)];
+assign  rounded_up=truncated_value + {{(OWID-1){1'b0}}, 1'b1 };
+assign  last_valid_bit = truncated_value[0];
+assign  first_lost_bit = i_val[(IWID-SHIFT-OWID-1)];
+
+wire    [(IWID-SHIFT-OWID-2):0] other_lost_bits;
+assign  other_lost_bits = i_val[(IWID-SHIFT-OWID-2):0];
+
+always @(posedge i_clk)
+    if (i_ce)
+        begin
+            if (!first_lost_bit) // Round down / truncate
+                o_val <= truncated_value;
+            else if (|other_lost_bits) // Round up to
+                o_val <= rounded_up; // closest value
+            else if (last_valid_bit) // Round up to
+                o_val <= rounded_up; // nearest even
+            else    // else round down to nearest even
+                o_val <= truncated_value;
+        end
+
+```
+
+## 12. Misindexing (FADD by Brendan)
+
+
+
+## 13. CV32-div-too-long
+
+1. In this CPU, the fetcher assumes that the branch is not taken and fetches instructions right after the branch. Branch decision are made in the EX stage, and when a branch is taken, the pipeline needs to be flushed.
+2. In a very original implementation in 2018, the circuit propagates the instruction (that locates after a taken-branch) from ID to EX and disable register write to prevent side effect.
+3. The implementation in 2 is buggy, because if the instruction right after a taken-branch is a multi-cycle instruction, the EX stage will take a long time to finish, and it will backpressure the ID stage to prevent new instructions from being propagated.
+4. In a fix in 2018, when a branch is taken in EX (which means the instruction in ID is useless), the circuit will propagate a fake single cycle instruction (like a pipeline nop/bubble) to EX. The result of this fix is the code we say in the left side at the bottom of the page.
+5. However, for some reason (e.g., a weird combination of operands), the fix in 4 cannot handle all cases of "multi-cycle instruction followed by a taken branch" correctly (which causes Issue 434). Therefore, the author commits a more fundamental fix (the commit mentioned above). In this fix, when the decoder finds deassert_we_i is 1, it will set afu_en to 0. (In the previous code, alu_en is decided by the instruction being decoded, regardless of deassert_we_i.) As a result, the control flow won't enter the if case in line 1542, and the DIV instruction won't be propagated to EX.
