@@ -31731,6 +31731,9 @@ endmodule // dcfifo_mixed_widths
 module dcfifo ( data, rdclk, wrclk, aclr, rdreq, wrreq,
                 eccstatus, rdfull, wrfull, rdempty, wrempty, rdusedw, wrusedw, q);
 
+/* verilator no_inline_module */
+/* verilator hier_block */
+
 // GLOBAL PARAMETER DECLARATION
     parameter lpm_width = 1;
     parameter lpm_widthu = 1;
@@ -47745,6 +47748,9 @@ module altsyncram   (
     logic [width_byteena_a-1:0] byteena_a; // -- converted tristate to logic
     logic [width_byteena_b-1:0] byteena_b; // -- converted tristate to logic
 	
+/* verilator no_inline_module */
+/* verilator hier_block */
+
 generate
 if(family_arria10)begin:m_arria10
 	altera_syncram_derived   altera_syncram_inst(
@@ -51706,6 +51712,9 @@ module scfifo ( data,
                 empty, 
                 almost_full, 
                 almost_empty);
+
+/* verilator no_inline_module */
+/* verilator hier_block */
 
 // GLOBAL PARAMETER DECLARATION
     parameter lpm_width               = 1;

@@ -7,7 +7,7 @@ VERILATOR_OPT?=
 VERILATOR_OPT+= -cc -timescale-override 10ps/10ps
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
 				-Wno-CASEX -Wno-PINMISSING
-VERILATOR_OPT+= -trace-fst -trace-structs
+VERILATOR_OPT+= -trace -trace-structs
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
 VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)
 
@@ -38,5 +38,5 @@ sim:
 	./sources1_test
 
 wave:
-	gtkwave sources0_test.fst >/dev/null 2>/dev/null &
-	gtkwave sources1_test.fst >/dev/null 2>/dev/null &
+	gtkwave sources0_test.vcd >/dev/null 2>/dev/null &
+	gtkwave sources1_test.vcd >/dev/null 2>/dev/null &

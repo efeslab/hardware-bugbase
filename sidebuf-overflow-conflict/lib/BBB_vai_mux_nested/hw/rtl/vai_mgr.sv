@@ -297,7 +297,7 @@ module vai_mgr # (parameter NUM_SUB_AFUS=8)
             else
                 c1tx_balance <= c1tx_balance;
 
-            if (c0tx_balance >= 4 && afu_TxPort.c0.valid)
+            if (c0tx_balance >= 5 && afu_TxPort.c0.valid)
             begin
                 c0tx_buf[c0tx_buf_cnt] <= afu_TxPort.c0;
                 c0tx_buf_cnt <= c0tx_buf_cnt + 1;

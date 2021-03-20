@@ -76,7 +76,7 @@ module reed_solomon_decoder_fifo
   always_ff@(posedge clk or posedge reset) begin
     if (reset) begin
       for (int i = 0; i < REED_SOLOMON_DECODER_FIFO_DEPTH; i++) begin
-        mem[i] = '0;
+        mem[i] <= '0;
       end
     end
     else begin

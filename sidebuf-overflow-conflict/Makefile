@@ -3,7 +3,7 @@ TOP_MODULE?=ccip_std_afu_wrapper
 RTL_WORK_DIR?=work
 TEST_DIR?=test
 
-VERILATOR?=/home/jcma/verilator/bin/verilator
+VERILATOR?=/home/jcma/veripass/verilator/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \

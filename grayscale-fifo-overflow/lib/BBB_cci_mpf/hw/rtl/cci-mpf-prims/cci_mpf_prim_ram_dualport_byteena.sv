@@ -75,14 +75,14 @@ module cci_mpf_prim_ram_dualport_byteena
     input  logic clk0,
     input  logic [$clog2(N_ENTRIES)-1 : 0] addr0,
     input  logic wen0,
-    input  tri1  [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena0,
+    input  logic  [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena0,
     input  logic [N_DATA_BITS-1 : 0] wdata0,
     output logic [N_DATA_BITS-1 : 0] rdata0,
 
     input  logic clk1,
     input  logic [$clog2(N_ENTRIES)-1 : 0] addr1,
     input  logic wen1,
-    input  tri1  [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena1,
+    input  logic  [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena1,
     input  logic [N_DATA_BITS-1 : 0] wdata1,
     output logic [N_DATA_BITS-1 : 0] rdata1
     );
