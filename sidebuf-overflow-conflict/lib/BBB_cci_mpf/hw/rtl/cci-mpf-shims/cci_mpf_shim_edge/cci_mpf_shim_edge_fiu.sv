@@ -227,7 +227,7 @@ module cci_mpf_shim_edge_fiu
         .addr1({ wr_heap_deq_idx, wr_heap_deq_clNum }),
         .rdata1(wr_data),
         .wen1(),
-        .byteena1(),
+        .byteena1(1'b1),
         .wdata1()
         );
 

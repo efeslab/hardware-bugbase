@@ -75,14 +75,14 @@ module cci_mpf_prim_ram_dualport_byteena
     input  logic clk0,
     input  logic [$clog2(N_ENTRIES)-1 : 0] addr0,
     input  logic wen0,
-    input  logic  [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena0,
+    input  logic [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena0,
     input  logic [N_DATA_BITS-1 : 0] wdata0,
     output logic [N_DATA_BITS-1 : 0] rdata0,
 
     input  logic clk1,
     input  logic [$clog2(N_ENTRIES)-1 : 0] addr1,
     input  logic wen1,
-    input  logic  [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena1,
+    input  logic [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena1,
     input  logic [N_DATA_BITS-1 : 0] wdata1,
     output logic [N_DATA_BITS-1 : 0] rdata1
     );
@@ -164,16 +164,16 @@ module cci_mpf_prim_ram_dualport_byteena
           .q_b(mem_rd1[OUTDATA_IDX]), \
            \
           // Legally unconnected ports -- get rid of lint errors \
-          .rden_a(), \
-          .rden_b(), \
-          .clocken0(), \
-          .clocken1(), \
-          .clocken2(), \
-          .clocken3(), \
-          .aclr0(), \
-          .aclr1(), \
-          .addressstall_a(), \
-          .addressstall_b(), \
+          .rden_a(1'b1), \
+          .rden_b(1'b1), \
+          .clocken0(1'b1), \
+          .clocken1(1'b1), \
+          .clocken2(1'b1), \
+          .clocken3(1'b1), \
+          .aclr0(1'b0), \
+          .aclr1(1'b0), \
+          .addressstall_a(1'b0), \
+          .addressstall_b(1'b0), \
           .eccstatus() \
           );
 
@@ -251,14 +251,14 @@ module cci_mpf_prim_ram_dualport_byteena_init
     input  logic clk0,
     input  logic [$clog2(N_ENTRIES)-1 : 0] addr0,
     input  logic wen0,
-    input  tri1  [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena0,
+    input  logic [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena0,
     input  logic [N_DATA_BITS-1 : 0] wdata0,
     output logic [N_DATA_BITS-1 : 0] rdata0,
 
     input  logic clk1,
     input  logic [$clog2(N_ENTRIES)-1 : 0] addr1,
     input  logic wen1,
-    input  tri1  [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena1,
+    input  logic [(N_DATA_BITS / N_BYTE_BITS)-1 : 0] byteena1,
     input  logic [N_DATA_BITS-1 : 0] wdata1,
     output logic [N_DATA_BITS-1 : 0] rdata1
     );

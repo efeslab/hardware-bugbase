@@ -946,7 +946,7 @@ module test_afu
         .clk1(clk),
         .addr1(rd_addr_chk_idx_q),
         .wen1(1'b0),
-        .byteena1(),
+        .byteena1(1'b1),
         .wdata1(),
         .rdata1(rd_chk_data)
         );
