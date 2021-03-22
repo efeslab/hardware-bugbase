@@ -154,18 +154,18 @@ module cci_mpf_prim_ram_dualport
           .q_b(mem_rd1[OUTDATA_IDX]), \
            \
           // Legally unconnected ports -- get rid of lint errors \
-          .rden_a(), \
-          .rden_b(), \
-          .clocken0(), \
-          .clocken1(), \
-          .clocken2(), \
-          .clocken3(), \
-          .aclr0(), \
-          .aclr1(), \
-          .byteena_a(), \
-          .byteena_b(), \
-          .addressstall_a(), \
-          .addressstall_b(), \
+          .rden_a(1'b1), \
+          .rden_b(1'b1), \
+          .clocken0(1'b1), \
+          .clocken1(1'b1), \
+          .clocken2(1'b1), \
+          .clocken3(1'b1), \
+          .aclr0(1'b0), \
+          .aclr1(1'b0), \
+          .byteena_a(1'b1), \
+          .byteena_b(1'b1), \
+          .addressstall_a(1'b0), \
+          .addressstall_b(1'b0), \
           .eccstatus() \
           );
 

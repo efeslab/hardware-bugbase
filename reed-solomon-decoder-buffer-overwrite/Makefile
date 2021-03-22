@@ -31,7 +31,7 @@ verilator:
 	$(VERILATOR) $(VERILATOR_OPT) -F $(RTL_SOURCES) -top-module $(TOP_MODULE) --Mdir $(RTL_WORK_DIR)
 	$(MAKE) -C $(RTL_WORK_DIR) -f V$(TOP_MODULE).mk
 
-sw:
+sw: verilator
 	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) -o $(TEST_BIN)
 
 clean:
