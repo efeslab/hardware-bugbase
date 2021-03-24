@@ -462,8 +462,6 @@ module cci_mpf_shim_rsp_order
 
     always_comb
     begin
-        afu.c0Rx = fiu_buf.c0Rx;
-
         // Either forward the header from the FIU for non-read responses or
         // reconstruct the read response header.  The CCI-E header has the same
         // low bits as CCI-S so we always construct CCI-E and truncate when
@@ -478,11 +476,13 @@ module cci_mpf_shim_rsp_order
         end
         else if (SORT_READ_RESPONSES && cci_c0Rx_isReadRsp(fiu_buf.c0Rx))
         begin
+			afu.c0Rx = fiu_buf.c0Rx;
             // Read response comes from the ROB, not the FIU directly
             afu.c0Rx.rspValid = 1'b0;
         end
         else
         begin
+			afu.c0Rx = fiu_buf.c0Rx;
             afu.c0Rx.hdr = fiu_buf.c0Rx.hdr;
 
             // Return preserved Mdata
