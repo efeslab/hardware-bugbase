@@ -1,0 +1,11 @@
+cores/bimpy.v
+cores/bitreverse.v
+cores/butterfly.v
+cores/convround.v
+cores/fftmain.v
+cores/fftstage.v
+cores/hwbfly.v
+cores/laststage.v
+cores/longbimpy.v
+cores/qtrstage.v
+cores/shiftaddmpy.v
