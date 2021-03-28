@@ -1,4 +1,4 @@
-RTL_SOURCES?=sources.txt.bk2
+RTL_SOURCES?=instrumented.txt
 TOP_MODULE?=ccip_std_afu_wrapper
 RTL_WORK_DIR?=work
 TEST_DIR?=test
