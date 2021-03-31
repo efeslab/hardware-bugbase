@@ -32,6 +32,9 @@ double sc_time_stamp() {
 void sc_time_step() {
     timestamp += pst;
 }
+void sc_time_step_half() {
+    timestamp += pst/2;
+}
 
 #define ZEROIZE(x) \
     memset(&(x), 0, sizeof((x)))
@@ -273,6 +276,9 @@ int main(int argc, char **argv) {
         //    by 0.
         // 2. Verilator ASSUMES these bits are 0.
         zeroize_extra_bits(tb);
+		tb->eval();
+		trace->dump(timestamp);
+		sc_time_step_half();
 
         tb->pClk = 1;
         tb->eval();
@@ -282,7 +288,7 @@ int main(int argc, char **argv) {
         tb->pClk = 0;
         tb->eval();
         trace->dump(timestamp);
-        sc_time_step();
+        sc_time_step_half();
     }
 
 save_trace_and_exit:
