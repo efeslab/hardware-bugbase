@@ -21,7 +21,7 @@ module ccip_std_afu
 	t_if_ccip_Tx sTx;
 
 	assign sRx = pck_cp2af_sRx;
-	assign sTx = pck_af2cp_sTx;
+	assign pck_af2cp_sTx = sTx;
 
 	ccip_std_afu_wrapper wrapped_afu(
 		.pClk(pClk),
