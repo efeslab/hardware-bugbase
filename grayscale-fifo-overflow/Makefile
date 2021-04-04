@@ -1,4 +1,4 @@
-RTL_SOURCES?=instrumented.txt
+RTL_SOURCES?=sources.txt
 TOP_MODULE?=ccip_std_afu_wrapper
 RTL_WORK_DIR?=work
 TEST_DIR?=test
@@ -6,7 +6,7 @@ TEST_DIR?=test
 VERILATOR?=/home/jcma/verilator_origin/install/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc -timescale-override 10ps/10ps
-VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-UNOPTFLAT -Wno-SPLITVAR -Wno-PINMISSING -Wno-LATCH
+VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-UNOPTFLAT -Wno-SPLITVAR -Wno-PINMISSING -Wno-LATCH -Wno-ALWCOMBORDER -Wno-TIMESCALEMOD
 VERILATOR_OPT+= -trace-fst -trace-structs -comp-limit-syms 0
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
 VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)

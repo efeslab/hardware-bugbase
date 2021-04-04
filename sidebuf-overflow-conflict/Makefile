@@ -7,8 +7,8 @@ VERILATOR?=/home/jcma/veripass/verilator/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
-				-Wno-CASEX -Wno-TIMESCALEMOD
-VERILATOR_OPT+= -trace-fst -trace-structs
+				-Wno-CASEX -Wno-TIMESCALEMOD -Wno-PINMISSING
+VERILATOR_OPT+= -trace-fst -trace-structs -comp-limit-syms 0
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
 VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)
 

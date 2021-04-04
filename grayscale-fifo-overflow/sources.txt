@@ -84,12 +84,17 @@ lib/BBB_cci_mpf/hw/rtl/cci-mpf-shims/cci_mpf_shim_wro/cci_mpf_shim_wro.sv
 lib/BBB_cci_mpf/hw/rtl/cci-mpf-shims/cci_mpf_shim_wro/cci_mpf_shim_wro_filter_group.sv
 lib/BBB_cci_mpf/hw/rtl/cci-mpf-shims/cci_mpf_shim_wro/cci_mpf_shim_wro_epoch_order.sv
 
+lib/BBB_ccip_async/hw/rtl/ccip_afifo_channel.sv
+lib/BBB_ccip_async/hw/rtl/ccip_async_activity_cnt.sv
+lib/BBB_ccip_async/hw/rtl/ccip_async_shim.sv
+
 rtl/grayscale_pkg.sv
 rtl/grayscale.sv
 rtl/grayscale_csr.sv
 rtl/grayscale_fifo.sv
 rtl/grayscale_requestor.sv
 rtl/ccip_std_afu.sv
+rtl/ccip_std_afu_async.sv
 rtl/ccip_std_afu_wrapper.sv
 
 

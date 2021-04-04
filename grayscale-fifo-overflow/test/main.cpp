@@ -119,6 +119,7 @@ int main(int argc, char **argv) {
                 tb->pck_cp2af_softReset = 1;
                 while (timestamp < end_timestamp) {
                     tb->pClk = 1;
+					tb->pClkDiv2 = !tb->pClkDiv2;
                     tb->eval();
                     trace->dump(timestamp);
                     sc_time_step();
@@ -278,6 +279,7 @@ int main(int argc, char **argv) {
 		sc_time_step_half();
 
         tb->pClk = 1;
+		tb->pClkDiv2 = !tb->pClkDiv2;
         tb->eval();
         trace->dump(timestamp);
         sc_time_step();
