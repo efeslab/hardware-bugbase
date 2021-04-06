@@ -307,7 +307,7 @@ module vai_mgr # (parameter NUM_SUB_AFUS=8)
                 if (c0tx_buf_cnt == TX_BUF_SIZE)
                 begin
                     mgr_c0tx_sidebuf_overflow <= 1;
-                    $error("c0tx side buffer overflow detected");
+                    $error("c0tx side buffer overflow detected"); /* verilator tag debug_display */
                 end
             end
             else if (~sRx.c0TxAlmFull && c0tx_buf_cnt != 0)
@@ -318,7 +318,7 @@ module vai_mgr # (parameter NUM_SUB_AFUS=8)
                 if (afu_TxPort.c0.valid)
                 begin
                     mgr_c0tx_conflict <= 1;
-                    $error("c0tx side buffer and afu packet conflict");
+                    $error("c0tx side buffer and afu packet conflict"); /* verilator tag debug_display */
                 end
             end
             else
@@ -334,7 +334,7 @@ module vai_mgr # (parameter NUM_SUB_AFUS=8)
                 if (c1tx_buf_cnt == TX_BUF_SIZE)
                 begin
                     mgr_c1tx_sidebuf_overflow <= 1;
-                    $error("c1tx side buffer overflow detected");
+                    $error("c1tx side buffer overflow detected"); /* verilator tag debug_display */
                 end
             end
             else if (~sRx.c1TxAlmFull && c1tx_buf_cnt != 0)
@@ -345,7 +345,7 @@ module vai_mgr # (parameter NUM_SUB_AFUS=8)
                 if (afu_TxPort.c1.valid)
                 begin
                     mgr_c1tx_conflict <= 1;
-                    $error("c1tx side buffer and afu packet conflict");
+                    $error("c1tx side buffer and afu packet conflict"); /* verilator tag debug_display */
                 end
             end
             else
