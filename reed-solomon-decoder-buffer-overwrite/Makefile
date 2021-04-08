@@ -1,5 +1,5 @@
-#RTL_SOURCES?=sources.txt
-RTL_SOURCES?=instrumented.txt
+RTL_SOURCES?=sources.txt
+#RTL_SOURCES?=instrumented.txt
 TOP_MODULE?=ccip_std_afu_wrapper
 RTL_WORK_DIR?=work
 TEST_DIR?=test
@@ -43,3 +43,5 @@ sim:
 
 wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &
+
+include ../common/Makefile.rules
