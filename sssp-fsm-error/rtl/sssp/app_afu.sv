@@ -384,7 +384,7 @@ module sssp_app_top
     always_ff @(posedge clk)
     begin
         if (vertex_receive_cnt > vertex_need_cnt) begin
-            $error("received vertices exceeds needed vertices: %d received, %d needed", vertex_receive_cnt, vertex_need_cnt);
+            $error("received vertices exceeds needed vertices: %d received, %d needed", vertex_receive_cnt, vertex_need_cnt) /*verilator tag debug_display*/;
         end
     end
 
