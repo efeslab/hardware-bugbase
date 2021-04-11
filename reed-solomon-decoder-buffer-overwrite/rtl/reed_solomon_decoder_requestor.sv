@@ -314,7 +314,7 @@ module reed_solomon_decoder_requestor
             ccip_c1_tx.valid <= 1'b0;
             /* How to add this assertion? */
             if (wr_ptr == 6'h0 && valid_in) begin
-              $error("requestor: write combining buffer overwrite");
+              $error("requestor: write combining buffer overwrite") /*verilator tag debug_display*/;
             end
           end
         end

@@ -317,6 +317,7 @@ module sssp_app_top
                     end
                 end
                 MAIN_FSM_PROCESS_EDGE_EARLY_START: begin
+                    $display("[%0t] FSM_EDGE_EARLY_START vertices_received %d", $time, vertices_received) /*verilator tag debug_display*/;
                     if (vertices_received) begin
                         state <= MAIN_FSM_PROCESS_EDGE;
                     end
@@ -383,7 +384,7 @@ module sssp_app_top
     always_ff @(posedge clk)
     begin
         if (vertex_receive_cnt > vertex_need_cnt) begin
-            $error("received vertices exceeds needed vertices");
+            $error("received vertices exceeds needed vertices: %d received, %d needed", vertex_receive_cnt, vertex_need_cnt) /*verilator tag debug_display*/;
         end
     end
 
@@ -421,7 +422,6 @@ module sssp_app_top
             else if (fifo_c1tx_count <= 4) begin
                 dma_pause <= 0;
             end
-
             case (state)
                 MAIN_FSM_IDLE: begin
                     dma_start <= 0;
@@ -524,6 +524,8 @@ module sssp_app_top
                     /* configure vertex counters */
                     vertex_need_cnt <= 9'(desc.vertex_ncl);
                     if (prefetch_desc_received) begin
+                        if (dma_out_valid)
+                            $display("[%0t] READ_VERTEX vertex_receive_cnt %d+1", $time, vertex_receive_cnt) /*verilator tag debug_display*/;
                         vertex_receive_cnt <= vertex_receive_cnt + dma_out_valid;
                     end
 
@@ -561,6 +563,8 @@ module sssp_app_top
                     end
 
                     if (prefetch_desc_received) begin
+                        if (dma_out_valid)
+                            $display("[%0t] EDGE_EARLY_START vertex_receive_cnt %d+1", $time, vertex_receive_cnt) /*verilator tag debug_display*/;
                         vertex_receive_cnt <= vertex_receive_cnt + dma_out_valid;
                     end
                 end

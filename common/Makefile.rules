@@ -1,0 +1,22 @@
+VERIPASS_PATH?=${HOME}/FPGA/veripass
+SV2V?=${VERIPASS_PATH}/sv2v.py
+SV2V_OUT_MODES=notask withtask
+SV2V_SOURCES=$(foreach mode, ${SV2V_OUT_MODES}, sources.$(mode).txt)
+SV2V_SYNTH=$(foreach mode, ${SV2V_OUT_MODES}, build_${mode})
+SYNTH_AFU_JSON=../common/cci_afu.json
+SYNTH_CCIP_DEWRAPPER=../common/ccip_dewrapper.sv
+
+withtask.v: ${RTL_SOURCES}
+	${SV2V} --top ${TOP_MODULE} -F ${RTL_SOURCES} --tasksupport -o $@
+notask.v: ${RTL_SOURCES}
+	${SV2V} --top ${TOP_MODULE} -F ${RTL_SOURCES} -o $@
+.PHONY: clean_synth synth
+clean_synth:
+	rm -rf ${SV2V_SYNTH} ${SV2V_SOURCES} $(foreach s, ${SV2V_SYNTH}, $(s).log) withtask.v notask.v
+sources.%.txt: %.v
+	echo -e "${SYNTH_AFU_JSON}\n${SYNTH_CCIP_DEWRAPPER}\n$<" > $@
+build_%: sources.%.txt %.v
+	rm -rf $@
+	afu_synth_setup -s $< $@
+	cd $@ && run.sh > $@.log 2>&1
+synth: ${SV2V_SYNTH}

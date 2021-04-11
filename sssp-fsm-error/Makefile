@@ -42,3 +42,5 @@ sim:
 
 wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &
+
+include ../common/Makefile.rules
