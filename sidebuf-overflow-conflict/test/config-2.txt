@@ -6,7 +6,7 @@
 340000 mmio_rd tid=000 addr=0400 expval=1000000004000000
 380000 mmio_rd tid=001 addr=0402 expval=9aeffe5f84570612
 3120000 mmio_rd tid=002 addr=0404 expval=c000c9660d824272
-3140000 mmio_wr tid=010 addr=000b val=0
+3140000 mmio_wr tid=010 addr=000c val=0
 3160000 mmio_wr tid=003 addr=0444 val=00007f966c000040
 3200000 mmio_wr tid=004 addr=0446 val=0
 3240000 mmio_wr tid=005 addr=0446 val=1
