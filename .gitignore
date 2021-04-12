@@ -1,3 +1,6 @@
 *notask*
 *withtask*
 build*
+sweep*.v
+__pycache__
+*.swp
