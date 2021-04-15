@@ -1,0 +1,15 @@
++define+FPGA_PLATFORM_INTG_XEON
+
+ccip/device_if/ccip_if_pkg.sv
+
+#../common/altera/220model.v
+#../common/altera/altera_mf.v
+
++incdir+./rtl
++incdir+./ccip
++incdir+./ccip/device_if
++incdir+./ccip/platform_shims
+
++define+CCI_SIMULATION
+rtl/cci_hello_afu.sv
+rtl/ccip_std_afu_wrapper.sv
