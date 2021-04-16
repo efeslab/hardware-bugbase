@@ -4,3 +4,4 @@ work/
 *.vcd
 *_test
 *_work
+*.tcl
