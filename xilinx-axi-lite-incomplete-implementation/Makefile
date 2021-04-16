@@ -40,3 +40,9 @@ sim:
 wave:
 	gtkwave sources0_test.vcd >/dev/null 2>/dev/null &
 	gtkwave sources1_test.vcd >/dev/null 2>/dev/null &
+
+# for resouce-util synthesize
+RTL_SOURCES=sources.txt
+TOP_MODULE=xlnxdemo
+WITHTASK_OPT=--tasksupport --tasksupport-mode=ILA --tasksupport-ignoretag --reset="!S_AXI_ARESETN"
+include ../common/Makefile.rules

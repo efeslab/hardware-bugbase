@@ -5,9 +5,10 @@ SV2V_SOURCES=$(foreach mode, ${SV2V_OUT_MODES}, sources.$(mode).txt)
 SV2V_SYNTH=$(foreach mode, ${SV2V_OUT_MODES}, build_${mode})
 SYNTH_AFU_JSON=../common/cci_afu.json
 SYNTH_CCIP_DEWRAPPER=../common/ccip_dewrapper.sv
+WITHTASK_OPT?=--tasksupport
 
 withtask.v: ${RTL_SOURCES}
-	${SV2V} --top ${TOP_MODULE} -F ${RTL_SOURCES} --tasksupport -o $@
+	${SV2V} --top ${TOP_MODULE} -F ${RTL_SOURCES} ${WITHTASK_OPT} -o $@
 notask.v: ${RTL_SOURCES}
 	${SV2V} --top ${TOP_MODULE} -F ${RTL_SOURCES} -o $@
 .PHONY: clean_synth synth
