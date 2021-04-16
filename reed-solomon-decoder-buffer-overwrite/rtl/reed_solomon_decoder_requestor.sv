@@ -365,7 +365,7 @@ module reed_solomon_decoder_requestor
 
       S_WR_WAIT:
         begin
-          if (valid_in && (wr_ptr == '1)) begin
+          if (valid_in && (wr_ptr == 'd63)) begin
             wr_next_state = S_WR_DATA;
           end
           else if (wr_offset == hc_buffer[0].size) begin
