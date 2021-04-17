@@ -1,0 +1,96 @@
+Notation:
+Qx.y means to ask the y-th question during the x step.
+Ix.y means the instrumentation I would do to answer Qx.y
+ANSx.y means the answer I get from the instrumentation Ix.y
+
+1. SHA512-UnclearedValid
+Symptom: the harp firmware reports too many packets (>8) were sent after AlmFull is 1.
+Q1.1: which state am I in? The problem must be in sha512_requestor, which is the only place sending out packets. There are two state machine in the requestor (one for READ one for WRITE).
+Q1.2: which channel is almost full?
+I1.1: log the state transition history (including current state) of those two state machines
+I1.2: log the almfull signal of c0, c1 tx channels.
+ANS1.1: We are in S_RD_FINISH and S_WR_FINISH state
+ANS1.2: The c1TxAlmFull is 1. c0TxAlmFull is 0
+
+Bug found.
+
+2. SHA512-BitTruncation
+Symptom: FPGA triggers pagefault which is catched by the kernel.
+Q1.1: The same as 1.Q1.1
+Q1.2: Log the address of each READ/WRITE request (when the package was sent)
+I1.1: The same as 1.I1.1
+I1.2: log whenever ccip request header.address is assigned.
+ANS1.1: S_WR_FETCH
+ANS1.2: The write address is indeed wrong after cross-checking with the software-side expected request address.
+(Bug could be found if you notice the suspicious bit-truncation operation. Especially if you found the wrong requested address share the same prefix as the correct address)
+Q2.1: Do I parse the mmio configuration wrong?
+I2.1: Log the parsing result from mmio input => hc_dsm_base
+ANS2.1: The parsing result is wrong. Since we know what the value should be at the software-side, it would be obvious to confirm that the bit-truncation is wrong.
+
+Bug found.
+
+3. SSSP-OutdatedValid
+Symptom: The result of SSSP is **sometimes** wrong. The result is only wrong if the mem read response of the last vertex and the first edge return at adjacent cycles.
+Q1.1: (optional, to understand the first edge was misinterpreted as a vertex.) How were each update entry generated?
+I1.1: Trace the word_out signals in the sssp_pipeline. i.e., for each edge src->dst, log src.id, dst.id, src.weight, edge.weight.
+ANS1.1: By cross checking with the software-side input, the problematic distance results comes from an invalid vertex id and vertex weight (which should be interpreted as edge instead). More specifically, you should be able to tell it was the first edge misused as a vertex.
+Q2.1: What was wrong when transiting from the vertex reading state to the edge processing state?
+I2.1: Instrument the state machine transition condition and how many vertices has been received
+ANS2.1: When the results is wrong, the mem read response arrived during "vertex reading state", even though we have already received enough vertices. i.e., the state transition happens one cycle later than expected. The state transition condition is wrong.
+
+Bug Found.
+
+4. RSD-BufferOverflow
+Symptom: Wrong results. You will see the results written back to mem have a unique pattern. Let us assume the correct answer (computed by CPU) is "1111;2222;3333;4444". Then the FPGA will give you "2111;3322;4443;4444". i.e. the next cache-line data is overwritten to the current cacheline.
+Q1.1: Could any new incoming data overwrite the write-combining buffer when it is waiting for a write-back?
+I1.1: Log the buffer index (wr_ptr) upon request state transition (S_WR_DATA <-> S_WR_WAIT).
+I1.2: Log all incoming packets (valid_in) while the buffer is waiting for a write-back (the S_WR_DATA state in the requestor).
+ANS1.1: New data could show up while the buffer is waiting for a write-back. The logs of wr_ptr reveal the source of data loss.
+
+Bug Found.
+
+NOTE: I think the "never-finish" symptom would ever happen on real hardware.
+
+5. Grayscale-BufferOverflow
+Symptom: never finish
+Q1.1: Which state am I in? The main state machine of grayscale is in requestor, a mem READ and a mem WRITE state machine.
+I1.1: Log the `rd_state` and `wr_state` in requestor (state machine transitions too).
+ANS1.1: The state machine is at S_WR_DATA. The state machine transition condition indicates a mismatch between the expected number of write requests, the number of requests actually received, the number of requests actually issued.
+Q2.1: What are the exact values of those mismatching number of requests when the state machine got stuck?
+I2.1: Count the occurrences of `valid_in`(i.e. enq_en), `deq_en`(i.e. wr_offset) and the value of `hc_buffer[0].size`(i.e. the expected number of write requests)
+ANS2.1: The number of dequeued requests is fewer than enqueued requests. The fifo is confirmed to overflow.
+
+Bug Found.
+
+6. Optimus-BufferOverflow
+Symptom: application never finish. Note that the "true" symptom is packet loss and different application will behave differently upon packet loss. Normally, the behaviour is "never finish" since the applications are supposed to wait for the correct number of mem read/write responses (which will never come since requests are lost) before going to the next step.
+Q1.1 What state am I in the application? Do I send memory requests correctly? Do I receive all memory responses?
+I1.1 For state machine logging, same as previous ones. The rest of the instrumentations are application-specific. The goal is to make sure it was not the applications' fault.
+ANS1.1 Eventually, you will find nothing suspicious inside each application. Then you will start questioning optimus.
+Q2.1 Does sidebuffer lose any packets?
+I2.1 Count the number of requests sent by application and the number sent by optimus.
+ANS2.1 Optimus sent fewer mem requests than application requested.
+Q3.1 When would the invariant (the packets sent by optimus + packets inside side-buffer) == (packets sent by applications) do not hold?
+I3.1 Log the values of above three variables/counters along with the conditions when any of them changes.
+ANS3.1 Packet loss happens when the above invariant is broken.
+
+Bug Found.
+
+7. Optimus-SignalConflict
+Everything is the same as 6.
+
+11. AXI-Lite-DropAck (this is an AXI slave)
+Symptom: The acknowledgements/responses of certain transactions are lost (e.g. S_AXI_RVALID, S_AXI_BVALID). Note that such info is expected to come from the master-side of the AXI-lite protocol.
+Q1.1: When and how many requests did you receive (S_AXI_WREADY, S_AXI_AWREADY, S_AXI_ARREADY)? When and how many response did you send (S_AXI_BVALID, S_AXI_RVALID)?
+I1.1: Log each variables used in the path constraints of each signals in question.
+ANS1.1: From the log you are supposed to find out the second request, which was received before sending the response of the first request, was lost. Cross-checking the protocol spec, this buggy AXI-lite client should not receive the second request (set S_AXI_XXXREADY) before sending the reponse (S_AXI_XXXVALID).
+NOTE: This bug is caused by not performing a full round-trip of handshakes (one for request, one for response) at a time.
+
+12. AXI-Lite-Stream-IncorrectLast (this is an AXI master)
+Symptom: The AXI master violates design specifications (TLAST changed while TVALID && !TREADY). Note that such info is expected to come from the slave-side of the AXI protocol. The AXI-slave will go through a sequence of troubleshooting and find out master breaks its assumption.
+
+No questions. Once you figure out the specification violation, you can immediately fix the bug.
+The heavy-lifting is to detect such violation at the slave side. However, we do not have any reasonable slave implementation to think about the detection process.
+I feel an AXI protocol checker is helpful here. We have seen such checker-style or user-provided assertions pervasively useful in our hardware bugbase.
+
+Bug Found.
