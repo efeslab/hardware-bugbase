@@ -7,7 +7,7 @@ VERILATOR?=verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc -timescale-override 10ps/10ps
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
-				-Wno-CASEX -Wno-TIMESCALEMOD
+				-Wno-CASEX -Wno-TIMESCALEMOD -Wno-VLTAG
 VERILATOR_OPT+= -trace-fst -trace-structs
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
 VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)
