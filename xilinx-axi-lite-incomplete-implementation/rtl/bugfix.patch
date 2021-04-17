@@ -1,0 +1,31 @@
+diff --git a/xilinx-axi-lite-incomplete-implementation/rtl/xlnxdemo.v b/xilinx-axi-lite-incomplete-implementation/rtl/xlnxdemo.v
+index ee19767..5c61a61 100644
+--- a/xilinx-axi-lite-incomplete-implementation/rtl/xlnxdemo.v
++++ b/xilinx-axi-lite-incomplete-implementation/rtl/xlnxdemo.v
+@@ -192,7 +192,7 @@ module xlnxdemo #
+ 	    end
+ 	  else
+ 	    begin
+-	      if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID)
++	      if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && (!S_AXI_BVALID || S_AXI_BREADY))
+ 	        begin
+ 	          // slave is ready to accept write address when
+ 	          // there is a valid write address and write data
+@@ -240,7 +240,7 @@ module xlnxdemo #
+ 	    end
+ 	  else
+ 	    begin
+-	      if (~axi_wready && S_AXI_WVALID && S_AXI_AWVALID)
++	      if (~axi_wready && S_AXI_WVALID && S_AXI_AWVALID && (!S_AXI_BVALID || S_AXI_BREADY))
+ 	        begin
+ 	          // slave is ready to accept write data when
+ 	          // there is a valid write address and write data
+@@ -617,7 +617,7 @@ module xlnxdemo #
+ 	    end
+ 	  else
+ 	    begin
+-	      if (~axi_arready && S_AXI_ARVALID)
++	      if (~axi_arready && S_AXI_ARVALID && (!S_AXI_RVALID || S_AXI_RREADY))
+ 	        begin
+ 	          // indicates that the slave has acceped the valid read address
+ 	          axi_arready <= 1'b1;
