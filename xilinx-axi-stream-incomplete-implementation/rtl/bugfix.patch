@@ -1,0 +1,14 @@
+diff --git a/xilinx-axi-stream-incomplete-implementation/rtl/xlnxstream_2018_3.v b/xilinx-axi-stream-incomplete-implementation/rtl/xlnxstream_2018_3.v
+index 2887e6b..92798b4 100644
+--- a/xilinx-axi-stream-incomplete-implementation/rtl/xlnxstream_2018_3.v
++++ b/xilinx-axi-stream-incomplete-implementation/rtl/xlnxstream_2018_3.v
+@@ -185,7 +185,8 @@ module xlnxstream_2018_3 #
+ 		axis_tlast_delay <= 1'b0;
+ 	end else begin
+ 		axis_tvalid_delay <= axis_tvalid;
+-		axis_tlast_delay <= axis_tlast;
++		if (!axis_tvalid_delay || M_AXIS_TREADY)
++			axis_tlast_delay <= axis_tlast;
+ 	end
+ 
+ 

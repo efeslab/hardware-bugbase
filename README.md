@@ -1,5 +1,7 @@
 # Bugs with code snippets
 
+The simulation of manual debugging can be found [here](manual_debug_log).
+
 ## 1. Uncleared Valid Bit (SHA512)
 
 ### Code

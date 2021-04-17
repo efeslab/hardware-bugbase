@@ -57,6 +57,7 @@ module test (
 
 	// This module may or may not generate data output at each cycle.
 	// It takes 11 cycles to respond to the almfull signals.
+	// send out most N packets after almfull is set
 	weird_module weird_inst(
 		.clk(clk),
 		.almfull(almfull),
@@ -64,6 +65,8 @@ module test (
 		.valid(valid)
 	);
 
+	// balance means how many packets has been sent after almful is set.
+	// assert(balance <= 8)
 	logic [4:0] balance;
 	logic [2:0] buffer_cnt, buffer_cnt2;
 	logic [63:0] buffer [4:0];
@@ -76,16 +79,20 @@ module test (
 		else
 			balance <= balance;
 
-		// Here, balance >= 5 indicates that the circuit will send out at most 7 packets after almfull is asserted.
-		// However, there may be at most 6 extra packets that needs to be stored in the buffer, whose size is 5. 
-		// As a result, this buffer may be overflowed.
-		if (balance >= 5 && valid) begin
+		// Here, balance >= F(N) indicates you should start buffering requests when you already sent F(N) (some function of N, depends on reading the waveform).
+		// The circuit is supposed to send out at most 7 packets after almfull is asserted.
+		// However, there may be at more extra packets that needs to be stored than the size of the buffer, which causes buffer overflow.
+		// The smaller the buffer size, the sooner the overflow will happen. You can completely avoid overflow by using a big buffer.
+		// But here we assume the buffer is small enough to cause rare overflow at runtime (on FPGA).
+		if (balance >= F(N) && valid) begin
+			// I have to buffer since the balance is reaching the limit
 			buffer[buffer_cnt] <= data;
 			buffer_cnt <= buffer_cnt + 1;
 			buffer_cnt2 <= buffer_cnt + 1;
 			o_valid <= 0;
 		end
 		else if (~almfull && buffer_cnt != 0) begin
+			// flush the buffer when I do not have to enque new data
 			o_data <= buffer[buffer_cnt2 - buffer_cnt];
 			o_valid <= 1;
 			buffer_cnt <= buffer_cnt - 1;
@@ -93,10 +100,12 @@ module test (
 		else begin
 			// When valid is true (i.e., weird_inst has a valid output) and there's anything in the buffer, the
 			// output of weird_inst will be ignored.
+			// This is the root cause
 			o_data <= data;
 			o_valid <= valid;
 		end
 	end
-
+	// the following invariant should hold:
+	// count(o_valid@[cycleN] == 1) + buffer_cnt@[cycleN] == count(valid@[cycleN-1] == 1)
 endmodule
 ```
