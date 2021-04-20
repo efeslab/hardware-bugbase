@@ -86,7 +86,7 @@ I1.1: Log each variables used in the path constraints of each signals in questio
 ANS1.1: From the log you are supposed to find out the second request, which was received before sending the response of the first request, was lost. Cross-checking the protocol spec, this buggy AXI-lite client should not receive the second request (set S_AXI_XXXREADY) before sending the reponse (S_AXI_XXXVALID).
 NOTE: This bug is caused by not performing a full round-trip of handshakes (one for request, one for response) at a time.
 
-12. AXI-Lite-Stream-IncorrectLast (this is an AXI master)
+12. AXI-Stream-IncorrectLast (this is an AXI master)
 Symptom: The AXI master violates design specifications (TLAST changed while TVALID && !TREADY). Note that such info is expected to come from the slave-side of the AXI protocol. The AXI-slave will go through a sequence of troubleshooting and find out master breaks its assumption.
 
 No questions. Once you figure out the specification violation, you can immediately fix the bug.
