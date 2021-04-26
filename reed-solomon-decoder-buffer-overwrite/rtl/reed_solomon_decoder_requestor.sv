@@ -307,6 +307,7 @@ module reed_solomon_decoder_requestor
             for (int i = 0; i < 64; i++) begin
                 ccip_c1_tx.data[i*8+7-:8] <= data[i];
             end
+            $display("wr_data sends out with wr_ptr %h", wr_ptr) /*verilator tag debug_display_4.1.1*/;
 
             wr_offset        <= t_ccip_clAddr'(wr_offset + 1);
           end
@@ -315,6 +316,9 @@ module reed_solomon_decoder_requestor
             /* How to add this assertion? */
             if (wr_ptr == 6'h0 && valid_in) begin
               $error("requestor: write combining buffer overwrite") /*verilator tag debug_display*/;
+            end
+            if (valid_in) begin
+              $display("[%0t] S_WR_DATA valid_in, wr_ptr %h", $time, wr_ptr) /*verilator tag debug_display_4.1.1*/;
             end
           end
         end

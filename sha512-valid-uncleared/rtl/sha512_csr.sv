@@ -101,7 +101,7 @@ module sha512_csr
   always_ff @(posedge clk) begin
     if (hc_dsm_sel(rx_mmio_channel)) begin
       hc_dsm_base <= t_ccip_clAddr'(rx_mmio_channel.data) >> 6;
-      $display("[%0t], hc_dsm_base 0x%h, clAddr 0x%h", $time, hc_dsm_base, t_ccip_clAddr'(rx_mmio_channel.data)) /*verilator tag debug_display*/;
+      $display("[%0t], hc_dsm_base 0x%h, clAddr 0x%h", $time, hc_dsm_base, t_ccip_clAddr'(rx_mmio_channel.data)) /*verilator tag debug_display_2.2.1*/;
     end
   end
 

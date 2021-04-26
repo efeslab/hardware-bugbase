@@ -75,6 +75,7 @@ module sha512_requestor
           if (!ccip_rx.c0TxAlmFull) begin
             rd_hdr.cl_len  = eCL_LEN_2;
             rd_hdr.address = hc_buffer[1].address + rd_cnt;
+            $display("[%0t] S_RD_FETCH address %h", $time, rd_hdr.address) /*verilator tag debug_display_2.1.2*/;
 
             ccip_c0_tx.valid <= 1'b1;
             ccip_c0_tx.hdr   <= rd_hdr;
@@ -82,6 +83,7 @@ module sha512_requestor
           end
           else begin
             ccip_c0_tx.valid <= 1'b0;
+            $display("[%0t] ccip_rx.c0TxAlmFull", $time) /*verilator tag debug_display_1.1.2*/;
           end
         end
 
@@ -220,11 +222,15 @@ module sha512_requestor
           if (!ccip_rx.c1TxAlmFull) begin
             wr_hdr.address = hc_buffer[0].address + wr_cnt;
             wr_hdr.sop = 1'b1;
+            $display("[%0t] S_WR_DATA address %h", $time, wr_hdr.address) /*verilator tag debug_display_2.1.2*/;
 
             ccip_c1_tx.hdr   <= wr_hdr;
             ccip_c1_tx.valid <= 1'b1;
             ccip_c1_tx.data  <= t_ccip_clData'(digest);
             wr_cnt           <= t_ccip_clAddr'(wr_cnt + 1);
+          end
+          else begin
+            $display("[%0t] ccip_tx.c1TxAlmFull", $time) /*verilator tag debug_display_1.1.2*/;
           end
         end
 
@@ -237,6 +243,9 @@ module sha512_requestor
             ccip_c1_tx.hdr   <= wr_hdr;
             ccip_c1_tx.valid <= 1'b1;
             ccip_c1_tx.data  <= t_ccip_clData'('h1);
+          end
+          else begin
+            $display("[%0t] ccip_tx.c1TxAlmFull", $time) /*verilator tag debug_display_1.1.2*/;
           end
         end
 

@@ -1,3 +1,4 @@
+include ../common/Makefile.env
 RTL_SOURCES?=sources.txt
 TOP_MODULE?=ccip_std_afu_wrapper
 RTL_WORK_DIR?=work
@@ -42,5 +43,12 @@ sim:
 
 wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &
+
+SV2V_OUT_FILES+=withtask
+withtask.v: ${RTL_SOURCES}
+	${SV2V} --top ${TOP_MODULE} -F ${RTL_SOURCES} --tasksupport --tasksupport-mode=STP \
+		--tasksupport-tags=debug_display_3.1.1 \
+		--tasksupport-tags=debug_display_3.2.1 \
+		-o $@
 
 include ../common/Makefile.rules
