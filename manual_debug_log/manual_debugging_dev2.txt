@@ -46,15 +46,20 @@ ANS4.1: the first edge is treated as a vertex
 Bug Found.
 
 4. RSD-BufferOverflow
-Symptom: Wrong results. You will see the results written back to mem have a unique pattern. Let us assume the correct answer (computed by CPU) is "1111;2222;3333;4444". Then the FPGA will give you "2111;3322;4443;4444". i.e. the next cache-line data is overwritten to the current cacheline.
+Symptom1: Never finish (because almfull is set >64 cycles so an entire cacheline was overwritten thus the packet counter is no longer correct.
+Q1.1: Which state am I in?
+I1.1: FSM helper pass
+ANS1.1: I am waiting for write response.
+Q2.1:
+NOTE: I think the "never-finish" symptom would ever happen on real hardware.
+
+Symptom2: Wrong results. You will see the results written back to mem have a unique pattern. Let us assume the correct answer (computed by CPU) is "1111;2222;3333;4444". Then the FPGA will give you "2111;3322;4443;4444". i.e. the next cache-line data is overwritten to the current cacheline.
 Q1.1: Could any new incoming data overwrite the write-combining buffer when it is waiting for a write-back?
-I1.1: Log the buffer index (wr_ptr) upon request state transition (S_WR_DATA <-> S_WR_WAIT).
-I1.2: Log all incoming packets (valid_in) while the buffer is waiting for a write-back (the S_WR_DATA state in the requestor).
-ANS1.1: New data could show up while the buffer is waiting for a write-back. The logs of wr_ptr reveal the source of data loss.
+I1.1: Log the buffer index (wr_ptr) upon request state transition (S_WR_DATA <-> S_WR_WAIT). Log all incoming packets (valid_in) while the buffer is waiting for a write-back (the S_WR_DATA state in the requestor).
+ANS1.1: The logs of wr_ptr reveal the source of data loss. New data showed up while the buffer is waiting for a write-back (valid_in).
 
 Bug Found.
 
-NOTE: I think the "never-finish" symptom would ever happen on real hardware.
 
 5. Grayscale-BufferOverflow
 Symptom: never finish

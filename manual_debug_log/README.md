@@ -1,0 +1,1 @@
+This directory contains the first version of manual debugging notes.  We also did a second iteration of manual debugging (including all bugs in the Table), check the [google spreadsheet](https://docs.google.com/spreadsheets/d/1FzXaVHSuvzyuvfsb68jqkXHw1ZPFsb6-njHek4t-uZ0/edit?usp=sharing).
