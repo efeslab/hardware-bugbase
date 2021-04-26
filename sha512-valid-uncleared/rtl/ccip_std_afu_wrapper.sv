@@ -92,7 +92,7 @@ module ccip_std_afu_wrapper
                     almfull_c0tx_valid_cnt <= almfull_c0tx_valid_cnt + 1;
                 end
                 if (almfull_c0tx_valid_cnt > 8) begin
-                    $error("more than 8 packets sent out during c0TxAlmFull") /*verilator tag debug_display*/;
+                    $error("more than 8 packets sent out during c0TxAlmFull");
                 end
             end
             else begin
@@ -104,7 +104,7 @@ module ccip_std_afu_wrapper
                     almfull_c1tx_valid_cnt <= almfull_c1tx_valid_cnt + 1;
                 end
                 if (almfull_c1tx_valid_cnt > 8) begin
-                    $error("more than 8 packets sent out during c1TxAlmFull") /*verilator tag debug_display*/;
+                    $error("more than 8 packets sent out during c1TxAlmFull");
                 end
             end
             else begin

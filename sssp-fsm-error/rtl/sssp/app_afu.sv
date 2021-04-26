@@ -317,9 +317,9 @@ module sssp_app_top
                     end
                 end
                 MAIN_FSM_PROCESS_EDGE_EARLY_START: begin
-                    $display("[%0t] FSM_EDGE_EARLY_START vertices_received %d", $time, vertices_received) /*verilator tag debug_display*/;
                     if (vertices_received) begin
                         state <= MAIN_FSM_PROCESS_EDGE;
+                        $display("[%0t] FSM_EDGE_EARLY_START->PROCESS_EDGE vertices_received", $time) /*verilator tag debug_display_3.2.1*/;
                     end
                 end
                 MAIN_FSM_PROCESS_EDGE: begin
@@ -384,7 +384,7 @@ module sssp_app_top
     always_ff @(posedge clk)
     begin
         if (vertex_receive_cnt > vertex_need_cnt) begin
-            $error("received vertices exceeds needed vertices: %d received, %d needed", vertex_receive_cnt, vertex_need_cnt) /*verilator tag debug_display*/;
+            //$error("received vertices exceeds needed vertices: %d received, %d needed", vertex_receive_cnt, vertex_need_cnt);
         end
     end
 
@@ -525,7 +525,7 @@ module sssp_app_top
                     vertex_need_cnt <= 9'(desc.vertex_ncl);
                     if (prefetch_desc_received) begin
                         if (dma_out_valid)
-                            $display("[%0t] READ_VERTEX vertex_receive_cnt %d+1", $time, vertex_receive_cnt) /*verilator tag debug_display*/;
+                            $display("[%0t] READ_VERTEX vertex_receive_cnt %d+1", $time, vertex_receive_cnt) /*verilator tag debug_display_3.2.1*/;
                         vertex_receive_cnt <= vertex_receive_cnt + dma_out_valid;
                     end
 
@@ -564,7 +564,7 @@ module sssp_app_top
 
                     if (prefetch_desc_received) begin
                         if (dma_out_valid)
-                            $display("[%0t] EDGE_EARLY_START vertex_receive_cnt %d+1", $time, vertex_receive_cnt) /*verilator tag debug_display*/;
+                            $display("[%0t] EDGE_EARLY_START vertex_receive_cnt %d+1", $time, vertex_receive_cnt) /*verilator tag debug_display_3.2.1*/;
                         vertex_receive_cnt <= vertex_receive_cnt + dma_out_valid;
                     end
                 end

@@ -132,6 +132,12 @@ module sssp_pipeline #(
             edge_valid <= (target_edge_qq.src != target_edge_qq.dst);
             word_out_prepare <=
                 {target_edge_qq.weight + vertex_out.weight, target_edge_qq.dst};
+            if ((word_in_valid_qq) && (control_qq == 2'h2) && edge_valid) begin
+                $display("[%0t] target_edge src %h, src_weight %h, dst %h, edge_weight %h",
+                    $time, target_edge_qq.src, vertex_out.weight,
+                    target_edge_qq.dst, target_edge_qq.weight)
+                    /*verilator tag debug_display_3.1.1*/;
+            end
 
             if (should_update & level_match & prefix_match & edge_valid) begin
                 word_out <= word_out_prepare;
