@@ -1,3 +1,4 @@
+include ../common/Makefile.env
 RTL_SOURCES?=sources.txt
 TOP_MODULE?=ccip_std_afu_wrapper
 RTL_WORK_DIR?=work
@@ -42,4 +43,9 @@ sim:
 wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &
 
+SV2V_OUT_FILES+=withtask
+# bug4: Grayscale-BufferOverflow
+CODE_GEN+=withtask.v bug4_step2.v
+withtask.v: ${RTL_SOURCES} bug4.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug4.instrument.cfg --reset ccip_std_afu__DOT__afu_async__DOT__reset
 include ../common/Makefile.rules

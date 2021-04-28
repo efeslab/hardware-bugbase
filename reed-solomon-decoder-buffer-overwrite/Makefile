@@ -1,3 +1,4 @@
+include ../common/Makefile.env
 RTL_SOURCES?=sources.txt
 #RTL_SOURCES?=instrumented.txt
 TOP_MODULE?=ccip_std_afu_wrapper
@@ -44,4 +45,9 @@ sim:
 wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &
 
+SV2V_OUT_FILES+=withtask
+# bug3: RSD-BufferOverflow
+CODE_GEN+=withtask.v bug3_step3.v
+withtask.v: ${RTL_SOURCES} bug3.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug3.instrument.cfg
 include ../common/Makefile.rules
