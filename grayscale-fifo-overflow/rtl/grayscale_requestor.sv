@@ -46,7 +46,7 @@ module grayscale_requestor
 
   always_ff@(posedge clk) begin
     if (~not_full && enq_en) begin
-      $error("grayscale_requestor: fifo overflow") /*verilator tag debug_display*/;
+      $error("grayscale_requestor: fifo overflow");
     end
   end
 

@@ -47,22 +47,13 @@ wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &
 
 SV2V_OUT_FILES+=withtask_bug1 withtask_bug2
-withtask_bug1.v: ${RTL_SOURCES}
-	${FSM_DETECT} --top ${TOP_MODULE} -F ${RTL_SOURCES} \
-		-S ccip_std_afu__DOT__uu_sha512_requestor__DOT__rd_state \
-		-S ccip_std_afu__DOT__uu_sha512_requestor__DOT__wr_state \
-		--tag debug_display_1.1.1 -o tmp.v
-	${SV2V} --top ${TOP_MODULE} -f tmp.v --tasksupport --tasksupport-mode=STP \
-		--tasksupport-tags=debug_display_1.1.1 \
-		--tasksupport-tags=debug_display_1.1.2 \
-		-o $@
-	rm tmp.v
-withtask_bug2.v: ${RTL_SOURCES}
-	${FSM_DETECT} --top ${TOP_MODULE} -F ${RTL_SOURCES} -S ccip_std_afu__DOT__uu_sha512_requestor__DOT__rd_state -S ccip_std_afu__DOT__uu_sha512_requestor__DOT__wr_state --tag debug_display_1.1.1 -o tmp.v
-	${SV2V} --top ${TOP_MODULE} -f tmp.v --tasksupport --tasksupport-mode=STP \
-		--tasksupport-tags=debug_display_1.1.1 \
-		--tasksupport-tags=debug_display_2.1.2 \
-		--tasksupport-tags=debug_display_2.2.1 \
-		-o $@
-	rm tmp.v
+# bug1: SHA512-UnclearedValid
+CODE_GEN+=withtask_bug1.v bug1_step2.v
+withtask_bug1.v: ${RTL_SOURCES} bug1.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug1.instrument.cfg
+
+# bug2: SHA512-BitTruncation
+CODE_GEN+=withtask_bug2.v bug2_step1.2.v
+withtask_bug2.v: ${RTL_SOURCES}  bug2.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug2.instrument.cfg
 include ../common/Makefile.rules

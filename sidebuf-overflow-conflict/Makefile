@@ -1,3 +1,4 @@
+include ../common/Makefile.env
 RTL_SOURCES?=sources.txt
 #RTL_SOURCES?=instrumented.txt
 TOP_MODULE?=ccip_std_afu_wrapper
@@ -48,4 +49,9 @@ wave:
 	gtkwave grayscale_mux8_bug1.fst > /dev/null 2>/dev/null &
 	gtkwave grayscale_mux8_bug2.fst > /dev/null 2>/dev/null &
 
+SV2V_OUT_FILES+=withtask
+# bug5: Optimus-BufferOverflow and Optimus-SignalConflict
+CODE_GEN+=withtask.v bug5_step4.v
+withtask.v: ${RTL_SOURCES} bug5.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug5.instrument.cfg --reset ccip_std_afu__DOT__ccip_mux_U0__DOT__reset
 include ../common/Makefile.rules
