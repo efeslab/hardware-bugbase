@@ -1,6 +1,6 @@
 PWD=$(shell pwd)
 VERILOG_SOURCES = $(wildcard $(PWD)/cores/*.v)
-SIM=icarus
+SIM=verilator
 
 TOPLEVEL := fftmain
 MODULE   := test
