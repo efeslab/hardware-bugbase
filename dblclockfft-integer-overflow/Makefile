@@ -1,18 +1,18 @@
-PWD=$(shell pwd)
-VERILOG_SOURCES = $(wildcard $(PWD)/cores/*.v)
-SIM=verilator
+all: verilator sw
 
-TOPLEVEL := fftmain
-MODULE   := test
+verilator:
+	verilator -cc -F source.txt -top-module fftmain -Wno-TIMESCALEMOD --trace --assert
+	cd obj_dir; $(MAKE) -f Vfftmain.mk
 
-#include $(shell cocotb-config --makefiles)/Makefile.inc
-include $(shell cocotb-config --makefiles)/Makefile.sim
-#include $(COCOTB)/makefiles/Makefile.sim
+sw: verilator
+	cd test; $(MAKE)
 
-clean::
-	rm -rf *.iq *.raw *.xml sim_build __pycache__
+clean:
+	cd test; $(MAKE) clean
+	rm -rf *.iq *.raw *.xml obj_dir
 
-sim: all
+sim:
+	cd test; $(MAKE) test
 
 wave:
-	gtkwave sim_build/waveform.vcd >/dev/null 2>/dev/null &
+	gtkwave test/*.vcd >/dev/null 2>/dev/null &
