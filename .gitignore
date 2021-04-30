@@ -1,5 +1,6 @@
 *notask*
 *withtask*
+bug?_step*.v
 build*
 sweep*.v
 __pycache__
