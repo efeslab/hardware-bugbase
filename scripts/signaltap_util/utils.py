@@ -28,6 +28,7 @@ def analyse_dir_summary(dirname: str):
 def report_dir_summary(dirname: str):
     res = analyse_dir_summary(dirname)
     if res:
-        print("{}: {}".format(dirname, str(res)))
+        print("{}: {}".format(dirname, ' '.join(res.keys())))
+        print(';'.join([str(x) for x in res.values()]))
     else:
         print("Cannot find skx_pr_afu.fit.summary in {}".format(dirname))
