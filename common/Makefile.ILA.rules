@@ -1,0 +1,23 @@
+# Expected variables
+# TCLGEN_SRCS: additional source files wanted to imported into vivado
+# TOP_MODULE_SYNTH: top module for synthesis
+# TCL_TEMPLATE
+SV2V_OUT_FILES+=notask
+SYNTH_FILES_GEN=$(foreach f, ${SV2V_OUT_FILES}, $(f).tcl.json $(f).ila.tcl)
+SV2V_SYNTH=$(foreach f, ${SV2V_OUT_FILES}, build_$(f))
+
+TCLGEN_SRC_OPT=$(foreach f, ${TCLGEN_SRCS}, --source $(f))
+
+# generate the tcl for all build targets needing ila.tcl
+%.tcl: %.v
+	$(eval NAME=$(basename $@))
+	${TCLGEN} -T ${TCL_TEMPLATE} --projname build_${NAME} ${TCLGEN_SRC_OPT} --source $< --svsrc $< --top ${TOP_MODULE_SYNTH} --ila ${NAME}.ila.tcl -o $@
+notask.tcl: notask.v
+	${TCLGEN} -T ${TCL_TEMPLATE} --projname build_notask ${TCLGEN_SRC_OPT} --source notask.v --svsrc notask.v --top ${TOP_MODULE_SYNTH} -o $@
+build_%: %.tcl %.v
+	mkdir $@
+	vivado -nolog -nojournal -mode tcl -source $< >$@/$@.log 2>&1
+
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+mkfile_dir := $(dir $(mkfile_path))
+include ${mkfile_dir}/Makefile.rules

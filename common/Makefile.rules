@@ -1,24 +1,16 @@
-SV2V_OUT_FILES+=notask
-SV2V_SOURCES=$(foreach f, ${SV2V_OUT_FILES}, sources.$(f).txt)
-SV2V_SYNTH=$(foreach f, ${SV2V_OUT_FILES}, build_$(f))
-SYNTH_AFU_JSON=../common/cci_afu.json
-SYNTH_CCIP_DEWRAPPER=../common/ccip_dewrapper.sv
-
+# Expected variables:
+# SV2V_SYNTH: all targets related to synthesis
+# CODE_GEN: all automatic generated verilog files
+# SYNTH_FILES_GEN: all automatic generated files for synthesis
 CODE_GEN+=notask.v
 notask.v: ${RTL_SOURCES}
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} -o $@ --not-retag-synthesis sv2v
 
 .PHONY: clean_synth synth clean_codegen
 clean_synth: clean_codegen
-	rm -rf ${SV2V_SYNTH} ${SV2V_SOURCES} withtask.v notask.v
+	rm -rf ${SV2V_SYNTH} ${SYNTH_FILES_GEN}
 clean_codegen:
 	rm -rf ${CODE_GEN}
-sources.%.txt: %.v
-	echo -e "${SYNTH_AFU_JSON}\n${SYNTH_CCIP_DEWRAPPER}\n$<" > $@
-build_%: sources.%.txt %.v
-	rm -rf $@
-	afu_synth_setup -s $< $@
-	cd $@ && run.sh > $@.log 2>&1
 synth: ${SV2V_SYNTH}
 
 .PHONY: verilator_onefile
@@ -27,4 +19,3 @@ verilator_onefile: ${VERILATOR_ONEFILE} clean
 	$(VERILATOR) $(VERILATOR_OPT) -Wno-PROCASSWIRE -top-module $(TOP_MODULE) --Mdir $(RTL_WORK_DIR) $<
 	$(MAKE) -C $(RTL_WORK_DIR) -f V$(TOP_MODULE).mk
 	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) -o $(basename $<).exe
-
