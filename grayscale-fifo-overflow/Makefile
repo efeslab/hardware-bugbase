@@ -48,4 +48,4 @@ SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug4_step2.v
 withtask.v: ${RTL_SOURCES} bug4.instrument.cfg
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug4.instrument.cfg --reset ccip_std_afu__DOT__afu_async__DOT__reset
-include ../common/Makefile.rules
+include ../common/Makefile.STP.rules
