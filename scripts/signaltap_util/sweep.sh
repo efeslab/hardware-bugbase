@@ -1,9 +1,12 @@
 #!/bin/sh
 # Usage:
 # 1. Generate sweep configurations
-#    ./sweep.sh gen > jobs.txt
+#    ./sweep.sh gen
+# 2. Generate makefile targets
+#    ./sweep.sh make > jobs.txt
 #    parallel -j 10 < jobs.txt
-# 2. Check missing resource util reports of sweep configurations
+# 3. Check missing resource util reports of sweep configurations
+# NOTE: designed to sweep based on sha512
 sweep() {
 	func=$1
 	for w in `seq 1 12`; do
@@ -13,9 +16,11 @@ sweep() {
 	done
 }
 gen() {
+	${HOME}/FPGA/veripass/tools.py --top ccip_std_afu_wrapper -F sources.txt -o sweep_w${w}_d${d}.v sv2v --tasksupport --tasksupport-mode=SWEEPSTP --tasksupport-log2width ${w} --tasksupport-log2depth ${d}
+}
+make() {
 	w=$1
 	d=$2
-	${HOME}/FPGA/veripass/sv2v.py --top ccip_std_afu_wrapper -F sources.txt --tasksupport --tasksupport-mode=SWEEP --tasksupport-log2width ${w} --tasksupport-log2depth ${d} -o sweep_w${w}_d${d}.v
 	echo make build_sweep_w${w}_d${d}
 }
 check() {
@@ -30,6 +35,8 @@ check() {
 case $1 in
 	gen)
 		sweep gen ;;
+	make)
+		sweep make;;
 	check)
 		sweep check ;;
 	*) echo "${0} gen|check"

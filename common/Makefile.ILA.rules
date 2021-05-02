@@ -18,6 +18,9 @@ build_%: %.tcl %.v
 	mkdir $@
 	vivado -nolog -nojournal -mode tcl -source $< >$@/$@.log 2>&1
 
+report_util: ${SV2V_SYNTH}
+	@for d in $^; do ${ILA_REPORT_UTIL} --module ${TOP_MODULE_SYNTH} $${d}; done
+
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 include ${mkfile_dir}/Makefile.rules
