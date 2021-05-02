@@ -9,8 +9,8 @@
 # NOTE: designed to sweep based on sha512
 sweep() {
 	func=$1
-	for w in `seq 1 12`; do
-		for d in `seq 1 17`; do
+	for w in `seq 5 11`; do
+		for d in `seq 10 13`; do
 			$func $w $d
 		done
 	done

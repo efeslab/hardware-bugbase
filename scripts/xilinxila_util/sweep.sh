@@ -9,8 +9,8 @@
 # NOTE: designed to sweep based on xilinx-axi-lite-incomplete-implementation
 sweep() {
 	func=$1
-	for w in `seq 6 12`; do
-		for d in `seq 9 13`; do
+	for w in `seq 5 10`; do
+		for d in `seq 10 13`; do
 			$func $w $d
 		done
 	done
