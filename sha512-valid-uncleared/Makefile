@@ -56,4 +56,4 @@ withtask_bug1.v: ${RTL_SOURCES} bug1.instrument.cfg
 CODE_GEN+=withtask_bug2.v bug2_step1.2.v
 withtask_bug2.v: ${RTL_SOURCES}  bug2.instrument.cfg
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug2.instrument.cfg
-include ../common/Makefile.rules
+include ../common/Makefile.STP.rules

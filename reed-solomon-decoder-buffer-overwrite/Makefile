@@ -50,4 +50,4 @@ SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug3_step3.v
 withtask.v: ${RTL_SOURCES} bug3.instrument.cfg
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug3.instrument.cfg
-include ../common/Makefile.rules
+include ../common/Makefile.STP.rules

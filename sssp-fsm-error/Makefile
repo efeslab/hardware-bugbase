@@ -51,4 +51,4 @@ withtask.v: ${RTL_SOURCES}
 		--tasksupport-tags=debug_display_3.2.1 \
 		-o $@
 
-include ../common/Makefile.rules
+include ../common/Makefile.STP.rules
