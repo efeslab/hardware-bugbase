@@ -2,6 +2,7 @@
 # SV2V_SYNTH: all targets related to synthesis
 # CODE_GEN: all automatic generated verilog files
 # SYNTH_FILES_GEN: all automatic generated files for synthesis
+# DEPTH_SWEEP_PREFIX: a list of prefix, each should be expand to make target "build_${prefix}_d%"
 CODE_GEN+=notask.v
 notask.v: ${RTL_SOURCES}
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} -o $@ --not-retag-synthesis sv2v
@@ -19,3 +20,7 @@ verilator_onefile: ${VERILATOR_ONEFILE} clean
 	$(VERILATOR) $(VERILATOR_OPT) -Wno-PROCASSWIRE -top-module $(TOP_MODULE) --Mdir $(RTL_WORK_DIR) $<
 	$(MAKE) -C $(RTL_WORK_DIR) -f V$(TOP_MODULE).mk
 	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) -o $(basename $<).exe
+
+# depth sweep
+DEPTH_SWEEP_TARGETS=$(foreach prefix, ${DEPTH_SWEEP_PREFIX}, $(foreach d, ${DEPTH_SWEEP}, build_${prefix}_d${d}))
+sweep_depth: ${DEPTH_SWEEP_TARGETS}
