@@ -54,4 +54,8 @@ SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug5_step4.v
 withtask.v: ${RTL_SOURCES} bug5.instrument.cfg
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug5.instrument.cfg --reset ccip_std_afu__DOT__ccip_mux_U0__DOT__reset
+
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug5
+depth_sweep_bug5_d%.v: ${RTL_SOURCES} bug5.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug5.instrument.cfg --reset ccip_std_afu__DOT__ccip_mux_U0__DOT__reset --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
 include ../common/Makefile.STP.rules

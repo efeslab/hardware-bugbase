@@ -52,8 +52,16 @@ CODE_GEN+=withtask_bug1.v bug1_step2.v
 withtask_bug1.v: ${RTL_SOURCES} bug1.instrument.cfg
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug1.instrument.cfg
 
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug1
+depth_sweep_bug1_d%.v: ${RTL_SOURCES} bug1.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug1.instrument.cfg --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
+
 # bug2: SHA512-BitTruncation
 CODE_GEN+=withtask_bug2.v bug2_step1.2.v
 withtask_bug2.v: ${RTL_SOURCES}  bug2.instrument.cfg
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug2.instrument.cfg
+
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug2
+depth_sweep_bug2_d%.v: ${RTL_SOURCES} bug2.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug2.instrument.cfg --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
 include ../common/Makefile.STP.rules

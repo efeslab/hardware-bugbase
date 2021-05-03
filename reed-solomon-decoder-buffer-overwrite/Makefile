@@ -50,4 +50,8 @@ SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug3_step3.v
 withtask.v: ${RTL_SOURCES} bug3.instrument.cfg
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug3.instrument.cfg
+
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug3
+depth_sweep_bug3_d%.v: ${RTL_SOURCES} bug3.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug3.instrument.cfg --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
 include ../common/Makefile.STP.rules

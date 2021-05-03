@@ -2,6 +2,6 @@
 *withtask*
 bug?_step*.v
 build*
-sweep*.v
+*sweep*.v
 __pycache__
 *.swp
