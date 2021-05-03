@@ -94,12 +94,12 @@ unsigned long bitrev(const int nbits, const unsigned long vl) {
 	return r;
 }
 
+unsigned long	m_tickcount;
 class	FFT_TB {
 public:
 	Vfftmain	*m_fft;
 	int		m_iaddr, m_oaddr, m_ntest, m_logbase;
 	bool		m_syncd;
-	unsigned long	m_tickcount;
 	VerilatedVcdC*	m_trace;
 	vector<OTYP> output;
 
@@ -192,6 +192,9 @@ public:
 	}
 };
 
+double sc_time_stamp() {
+	return m_tickcount*1000.0;
+}
 
 int	main(int argc, char **argv, char **envp) {
 	Verilated::commandArgs(argc, argv);

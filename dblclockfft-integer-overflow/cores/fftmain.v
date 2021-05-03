@@ -96,6 +96,11 @@ module fftmain(i_clk, i_reset, i_ce,
 	wire				br_sync;
 	wire	[(2*OWIDTH-1):0]	br_result;
 
+	always @(posedge i_clk) begin
+		if (i_ce)
+			$display("i_sample: %H", i_sample) /*verilator tag debug_display_1*/;
+	end
+
 
 	wire		w_s128;
 	wire	[33:0]	w_d128;
@@ -103,6 +108,11 @@ module fftmain(i_clk, i_reset, i_ce,
 			0, 1, "cmem_128.hex")
 		stage_128(i_clk, i_reset, i_ce,
 			(!i_reset), i_sample, w_d128, w_s128);
+
+	always @(posedge i_clk) begin
+		if (i_ce)
+			$display("w_d128: %H", w_d128) /*verilator tag debug_display_1*/;
+	end
 
 
 	wire		w_s64;
@@ -112,12 +122,24 @@ module fftmain(i_clk, i_reset, i_ce,
 		stage_64(i_clk, i_reset, i_ce,
 			w_s128, w_d128, w_d64, w_s64);
 
+	always @(posedge i_clk) begin
+		if (i_ce)
+			$display("w_d64: %H", w_d64) /*verilator tag debug_display_1*/;
+	end
+
+
 	wire		w_s32;
 	wire	[35:0]	w_d32;
 	fftstage	#(18,22,18,4,0,
 			0, 1, "cmem_32.hex")
 		stage_32(i_clk, i_reset, i_ce,
 			w_s64, w_d64, w_d32, w_s32);
+
+	always @(posedge i_clk) begin
+		if (i_ce)
+			$display("w_d32: %H", w_d32) /*verilator tag debug_display_1*/;
+	end
+
 
 	wire		w_s16;
 	wire	[37:0]	w_d16;
@@ -126,6 +148,12 @@ module fftmain(i_clk, i_reset, i_ce,
 		stage_16(i_clk, i_reset, i_ce,
 			w_s32, w_d32, w_d16, w_s16);
 
+	always @(posedge i_clk) begin
+		if (i_ce)
+			$display("w_d16: %H", w_d16) /*verilator tag debug_display_1*/;
+	end
+
+
 	wire		w_s8;
 	wire	[37:0]	w_d8;
 	fftstage	#(19,23,19,2,0,
@@ -133,14 +161,33 @@ module fftmain(i_clk, i_reset, i_ce,
 		stage_8(i_clk, i_reset, i_ce,
 			w_s16, w_d16, w_d8, w_s8);
 
+	always @(posedge i_clk) begin
+		if (i_ce)
+			$display("w_d8: %H", w_d8) /*verilator tag debug_display_1*/;
+	end
+
+
 	wire		w_s4;
 	wire	[39:0]	w_d4;
 	qtrstage	#(19,20,7,0,0)	stage_4(i_clk, i_reset, i_ce,
 						w_s8, w_d8, w_d4, w_s4);
+
+	always @(posedge i_clk) begin
+		if (i_ce)
+			$display("w_d4: %H", w_d4) /*verilator tag debug_display_1*/;
+	end
+
+
 	wire		w_s2;
 	wire	[39:0]	w_d2;
 	laststage	#(20,20,0)	stage_2(i_clk, i_reset, i_ce,
 					w_s4, w_d4, w_d2, w_s2);
+
+	always @(posedge i_clk) begin
+		if (i_ce)
+			$display("w_d2: %H", w_d2) /*verilator tag debug_display_1*/;
+	end
+
 
 	wire	br_start;
 	reg	r_br_started;

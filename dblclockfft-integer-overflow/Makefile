@@ -1,7 +1,7 @@
 all: verilator sw
 
 verilator:
-	verilator -cc -F source.txt -top-module fftmain -Wno-TIMESCALEMOD --trace --assert
+	verilator -cc -F source.txt -top-module fftmain -Wno-TIMESCALEMOD --trace --assert -Wno-PINMISSING -Wno-VLTAG
 	cd obj_dir; $(MAKE) -f Vfftmain.mk
 
 sw: verilator
