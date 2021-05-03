@@ -6,7 +6,9 @@ import itertools
 from functools import reduce, partial
 from operator import mul
 from signaltap_util.utils import analyse_dir_summary as analyse_STP_dir_summary
+from signaltap_util.utils import get_sorted_keys as stp_get_keys
 from xilinxila_util.utils import analyse_dir_summary as analyse_ILA_dir_summary
+from xilinxila_util.utils import get_sorted_keys as ila_get_keys
 
 SEP=','
 WIDTH_RE = r'w([0-9]+)'
@@ -22,7 +24,7 @@ PATTERN_CONFIG = {
     }
 }
 
-def report_sweep(args, analyse_dir_summary):
+def report_sweep(args, analyse_dir_summary, sorted_keys):
     # all_patterns should be a list of regex rules, each regex rule:
     # 1. matches exact one sweep variable
     # 2. contains exact one regex group representing the value of that sweep variable
@@ -38,7 +40,6 @@ def report_sweep(args, analyse_dir_summary):
     all_summaries = {}
     # { sweep_var_rule -> set of values }
     sweep_vars_valset = dict([(p, set()) for p in all_patterns])
-    all_keys = set()
     for d in all_dirs:
         sweep_vars = []
         for p in all_patterns:
@@ -49,9 +50,7 @@ def report_sweep(args, analyse_dir_summary):
             sweep_vars_valset[p].add(val)
         sweep_vars_tuple = tuple(sweep_vars)
         res = analyse_dir_summary(d)
-        all_keys |= res.keys()
         all_summaries[sweep_vars_tuple] = res
-    all_keys_ordered = sorted(all_keys)
     expected_N_summaries = reduce(mul, [len(valset) for valset in sweep_vars_valset.values()])
     if len(all_summaries) != expected_N_summaries:
         print("Not all sweep var pairs are available")
@@ -68,7 +67,7 @@ def report_sweep(args, analyse_dir_summary):
             print(SEP.join(
                 [var_config["name"]] + var_vals
                 ))
-            for k in all_keys_ordered:
+            for k in sorted_keys:
                 print(SEP.join([k] + [str(all_summaries[(val,)][k]) for val in var_vals]))
         elif len(all_vars) == 2:
             var1 = all_vars[0]
@@ -77,7 +76,7 @@ def report_sweep(args, analyse_dir_summary):
             var2 = all_vars[1]
             var2_cfg = PATTERN_CONFIG[var2]
             vals2 = sorted(list(sweep_vars_valset[var2]), key=var2_cfg["sortkey"])
-            for k in all_keys_ordered:
+            for k in sorted_keys:
                 print("Key: {}".format(k))
                 print("\"{}\"↓/\"{}\"→".format(var1_cfg["name"], var2_cfg["name"]) + SEP, end='')
                 print(SEP.join(vals2))
@@ -102,6 +101,8 @@ if args.mode == "ILA":
     if not (args.instance or args.module):
         parser.error("Need to match at least one of instance name or module name")
     analyse_dir_summary = partial(analyse_ILA_dir_summary, instance_name=args.instance, module_name=args.module)
+    sorted_keys = ila_get_keys()
 elif args.mode == "STP":
     analyse_dir_summary = analyse_STP_dir_summary
-report_sweep(args, analyse_dir_summary)
+    sorted_keys = stp_get_keys()
+report_sweep(args, analyse_dir_summary, sorted_keys)

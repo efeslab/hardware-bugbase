@@ -2,9 +2,14 @@ import re
 import os
 MATCH_RULES = {
         'ALM': r'Logic utilization \(in ALMs\) : ([0-9,]+)',
+        'FFs': r'Total registers : ([0-9]+)',
         'BRAMbit' : r'Total block memory bits : ([0-9,]+)',
         'BRAM#B' : r'Total RAM Blocks : ([0-9,]+)',
         }
+
+def get_sorted_keys():
+    return sorted(MATCH_RULES.keys())
+
 """
 Return : {str -> int}
 Dict keys are the same as the above MATCH_RULES
@@ -28,7 +33,8 @@ def analyse_dir_summary(dirname: str):
 def report_dir_summary(dirname: str):
     res = analyse_dir_summary(dirname)
     if res:
-        print("{}: {}".format(dirname, ' '.join(res.keys())))
-        print(';'.join([str(x) for x in res.values()]))
+        keys = get_sorted_keys()
+        print("{}: {}".format(dirname, ' '.join(keys)))
+        print(';'.join([str(res[x]) for x in keys]))
     else:
         print("Cannot find skx_pr_afu.fit.summary in {}".format(dirname))
