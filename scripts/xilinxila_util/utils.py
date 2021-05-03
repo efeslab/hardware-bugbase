@@ -3,14 +3,21 @@ from pathlib import Path
 # Headers:
 #    | Instance | Module | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs  | RAMB36 | RAMB18 | DSP Blocks |
 # 0        1         2            3        4             5        6      7       8        9         10
-INTERESTING_HEADERS = {
-    1: "Instance",
-    2: "Module",
+INTERESTING_METRICS = {
     3: "Total LUTs",
     7: "FFs",
     8: "RAMB36",
     9: "RAMB18",
 }
+INTERESTING_HEADERS = {
+    1: "Instance",
+    2: "Module",
+}
+INTERESTING_HEADERS.update(INTERESTING_METRICS)
+
+def get_sorted_keys():
+    sorted_headers = [ kvpair[1] for kvpair in sorted(INTERESTING_METRICS.items(), key=lambda p: p[0]) ]
+    return sorted_headers
 
 def analyse_summary(summary: str, instance_name: str, module_name: str):
     """
@@ -49,9 +56,9 @@ def analyse_dir_summary(dirname: str, instance_name: str, module_name:str):
 
 def report_dir_summary(dirname: str, instance_name: str, module_name: str):
     res = analyse_dir_summary(dirname, instance_name, module_name)
-    sorted_headers = [ kvpair[1] for kvpair in sorted(INTERESTING_HEADERS.items(), key=lambda p: p[0]) ]
+    keys = get_sorted_keys()
     if res:
-        print("{}: {}".format(dirname, ','.join(sorted_headers)))
-        print('\t' + ';'.join([str(res[x]) for x in sorted_headers]))
+        print("{}: {}".format(dirname, ','.join(keys)))
+        print('\t' + ';'.join([str(res[x]) for x in keys]))
     else:
         print("Cannot find utilization report in {}".format(dirname))
