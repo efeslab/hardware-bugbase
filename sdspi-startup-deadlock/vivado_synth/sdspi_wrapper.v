@@ -1,4 +1,4 @@
-module xlnxdemo_wrapper (
+module sdspi_wrapper (
   S_AXI_ACLK,
   S_AXI_ARESETN,
   S_AXI_AWADDR,
@@ -44,30 +44,24 @@ output wire [1 : 0] S_AXI_RRESP;
 output wire S_AXI_RVALID;
 input wire S_AXI_RREADY;
 
-  xlnxdemo
-  //#( .C_S_AXI_DATA_WIDTH(32), .C_S_AXI_ADDR_WIDTH(7))
+  sdspi
   inst (
-    .S_AXI_ACLK(S_AXI_ACLK),
-    .S_AXI_ARESETN(S_AXI_ARESETN),
-    .S_AXI_AWADDR(S_AXI_AWADDR),
-    .S_AXI_AWPROT(S_AXI_AWPROT),
-    .S_AXI_AWVALID(S_AXI_AWVALID),
-    .S_AXI_AWREADY(S_AXI_AWREADY),
-    .S_AXI_WDATA(S_AXI_WDATA),
-    .S_AXI_WSTRB(S_AXI_WSTRB),
-    .S_AXI_WVALID(S_AXI_WVALID),
-    .S_AXI_WREADY(S_AXI_WREADY),
-    .S_AXI_BRESP(S_AXI_BRESP),
-    .S_AXI_BVALID(S_AXI_BVALID),
-    .S_AXI_BREADY(S_AXI_BREADY),
-    .S_AXI_ARADDR(S_AXI_ARADDR),
-    .S_AXI_ARPROT(S_AXI_ARPROT),
-    .S_AXI_ARVALID(S_AXI_ARVALID),
-    .S_AXI_ARREADY(S_AXI_ARREADY),
-    .S_AXI_RDATA(S_AXI_RDATA),
-    .S_AXI_RRESP(S_AXI_RRESP),
-    .S_AXI_RVALID(S_AXI_RVALID),
-    .S_AXI_RREADY(S_AXI_RREADY)
+    .i_clk(S_AXI_ACLK),
+    .i_wb_cyc(S_AXI_AWVALID),
+    .i_wb_stb(S_AXI_WVALID),
+    .i_wb_we(S_AXI_BREADY),
+    .i_wb_addr(S_AXI_ARPROT[1:0]),
+    .i_wb_data(S_AXI_WDATA),
+    .o_wb_ack(S_AXI_AWREADY),
+    .o_wb_stall(S_AXI_WREADY),
+    .o_wb_data(S_AXI_RDATA),
+    .o_cs_n(S_AXI_BVALID),
+    .o_sck(S_AXI_ARREADY),
+    .o_mosi(S_AXI_RVALID),
+    .i_miso(S_AXI_ARPROT[2]),
+    .o_int(S_AXI_BRESP[0]),
+    .i_bus_grant(S_AXI_ARESETN),
+    .o_debug()
   );
 endmodule
 

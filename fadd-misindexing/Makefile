@@ -1,4 +1,5 @@
-RTL_SOURCES?=sources.txt
+include ../common/Makefile.env
+RTL_SOURCES?=sources-veripass.txt
 TOP_MODULE?=fadd
 RTL_WORK_DIR?=work
 TEST_DIR?=test
@@ -43,3 +44,19 @@ sim:
 wave:
 	gtkwave grayscale_mux8_bug1.fst > /dev/null 2>/dev/null &
 	gtkwave grayscale_mux8_bug2.fst > /dev/null 2>/dev/null &
+
+# for resource-util synthesize
+TOP_MODULE=fadd_buggy
+TOP_MODULE_SYNTH=fadd_wrapper
+TCLGEN_SRCS=vivado_synth/fadd_wrapper.v
+TCL_TEMPLATE=tcl.template
+SV2V_OUT_FILES+=withtask
+CODE_GEN+=withtask.v bug11.v
+
+withtask.v: ${RTL_SOURCES} bug11.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug11.instrument.cfg --reset "rst"
+
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug11
+depth_sweep_bug11_d%.v: ${RTL_SOURCES} bug11.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug11.instrument.cfg --reset "rst" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
+include ../common/Makefile.ILA.rules

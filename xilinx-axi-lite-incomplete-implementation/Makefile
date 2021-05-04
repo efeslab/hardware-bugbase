@@ -1,3 +1,4 @@
+include ../common/Makefile.env
 RTL_SOURCES?=sources0 sources1
 TOP_MODULE?=testbench
 TEST_DIR?=test
@@ -44,5 +45,15 @@ wave:
 # for resouce-util synthesize
 RTL_SOURCES=sources.txt
 TOP_MODULE=xlnxdemo
-WITHTASK_OPT=--tasksupport --tasksupport-mode=ILA --tasksupport-ignoretag --reset="!S_AXI_ARESETN"
-include ../common/Makefile.rules
+TOP_MODULE_SYNTH=xlnxdemo_wrapper
+TCLGEN_SRCS=vivado_synth/xlnxdemo_wrapper.v
+TCL_TEMPLATE=tcl.template
+SV2V_OUT_FILES+=withtask
+CODE_GEN+=withtask.v bug6.v
+withtask.v: ${RTL_SOURCES} bug6.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug6.instrument.cfg --reset "!S_AXI_ARESETN"
+
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug6
+depth_sweep_bug6_d%.v: ${RTL_SOURCES} bug6.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug6.instrument.cfg --reset "!S_AXI_ARESETN" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
+include ../common/Makefile.ILA.rules

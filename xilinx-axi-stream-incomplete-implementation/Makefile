@@ -1,3 +1,4 @@
+include ../common/Makefile.env
 RTL_SOURCES?=sources0
 TOP_MODULE?=testbench
 TEST_DIR?=test
@@ -37,3 +38,19 @@ sim:
 
 wave:
 	gtkwave sources0_test.fst >/dev/null 2>/dev/null &
+
+# for resouce-util synthesize
+RTL_SOURCES=sources.txt
+TOP_MODULE=xlnxstream_2018_3
+TOP_MODULE_SYNTH=xlnxstream_2018_3_wrapper
+TCLGEN_SRCS=vivado_synth/xlnxstream_2018_3_wrapper.v
+TCL_TEMPLATE=tcl.template
+SV2V_OUT_FILES+=withtask
+CODE_GEN+=withtask.v bug7.v
+withtask.v: ${RTL_SOURCES} bug7.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug7.instrument.cfg --reset "!M_AXIS_ARESETN"
+
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug7
+depth_sweep_bug7_d%.v: ${RTL_SOURCES} bug7.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug7.instrument.cfg --reset "!M_AXIS_ARESETN" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
+include ../common/Makefile.ILA.rules
