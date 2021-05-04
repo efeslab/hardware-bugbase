@@ -1,3 +1,4 @@
+include ../common/Makefile.env
 RTL_SOURCES?=sources.txt
 TOP_MODULE?=sdspi
 RTL_WORK_DIR?=work
@@ -45,3 +46,18 @@ sim:
 
 wave:
 	gtkwave trace.vcd > /dev/null 2>/dev/null &
+
+# for resource-util synthesize
+TOP_MODULE_SYNTH=sdspi_wrapper
+TCLGEN_SRCS=vivado_synth/sdspi_wrapper.v
+TCL_TEMPLATE=tcl.template
+SV2V_OUT_FILES+=withtask
+CODE_GEN+=withtask.v bug9.v
+
+withtask.v: ${RTL_SOURCES} bug9.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug9.instrument.cfg --reset "!i_bus_grant"
+
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug9
+depth_sweep_bug9_d%.v: ${RTL_SOURCES} bug9.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug9.instrument.cfg --reset "!i_bus_grant" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
+include ../common/Makefile.ILA.rules

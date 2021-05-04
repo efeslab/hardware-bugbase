@@ -3,5 +3,6 @@
 bug?_step*.v
 build*
 *sweep*.v
+*sweep*.tcl
 __pycache__
 *.swp
