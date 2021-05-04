@@ -18,8 +18,15 @@ build_%: %.tcl %.v
 	mkdir $@
 	vivado -nolog -nojournal -mode tcl -source $< >$@/$@.log 2>&1
 
-report_util: ${SV2V_SYNTH}
-	@for d in $^; do ${ILA_REPORT_UTIL} --module ${TOP_MODULE_SYNTH} $${d}; done
+report_util:
+	@${ILA_REPORT_UTIL} --module ${TOP_MODULE_SYNTH} ${SV2V_SYNTH}
+
+report_depth_sweep:
+	@for p in ${DEPTH_SWEEP_PREFIX}; do \
+		echo -e "\n### Depth Sweep of $${p}\n"; \
+		${REPORT_SWEEP} --mode=ILA --prefix build_$${p} \
+			--module ${TOP_MODULE_SYNTH} --pattern-depth; \
+	done
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
