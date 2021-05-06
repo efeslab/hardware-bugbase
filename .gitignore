@@ -6,3 +6,5 @@ build*
 *sweep*.tcl
 __pycache__
 *.swp
+*displayinfo*
+*widthinfo*
