@@ -49,7 +49,6 @@ wave:
 TOP_MODULE=fadd_buggy
 TOP_MODULE_SYNTH=fadd_wrapper
 TCLGEN_SRCS=vivado_synth/fadd_wrapper.v
-TCL_TEMPLATE=tcl.template
 SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug11.v
 

@@ -51,7 +51,6 @@ wave:
 # for resource-util synthesize
 TOP_MODULE_SYNTH=sdspi_wrapper
 TCLGEN_SRCS=vivado_synth/sdspi_wrapper.v
-TCL_TEMPLATE=tcl.template
 SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug8.v
 withtask.v: ${RTL_SOURCES} bug8.instrument.cfg

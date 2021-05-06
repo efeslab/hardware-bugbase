@@ -44,7 +44,6 @@ RTL_SOURCES=sources.txt
 TOP_MODULE=xlnxstream_2018_3
 TOP_MODULE_SYNTH=xlnxstream_2018_3_wrapper
 TCLGEN_SRCS=vivado_synth/xlnxstream_2018_3_wrapper.v
-TCL_TEMPLATE=tcl.template
 SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug7.v
 withtask.v: ${RTL_SOURCES} bug7.instrument.cfg
