@@ -3,29 +3,43 @@
 # TOP_MODULE_SYNTH: top module for synthesis
 # TCL_TEMPLATE
 SV2V_OUT_FILES+=notask
-SYNTH_FILES_GEN=$(foreach f, ${SV2V_OUT_FILES}, $(f).tcl.json $(f).ila.tcl)
+SYNTH_FILES_GEN=$(foreach f, ${SV2V_OUT_FILES}, $(f).ila.tcl $(f).tcl)
 SV2V_SYNTH=$(foreach f, ${SV2V_OUT_FILES}, build_$(f))
 
 TCLGEN_SRC_OPT=$(foreach f, ${TCLGEN_SRCS}, --source $(f))
+TIMING_XDC?=../common/clk250.xdc
+TCL_TEMPLATE?=../common/AXI_WRAPPER.tcl.template
 
 # generate the tcl for all build targets needing ila.tcl
 %.tcl: %.v
 	$(eval NAME=$(basename $@))
-	${TCLGEN} -T ${TCL_TEMPLATE} --projname build_${NAME} ${TCLGEN_SRC_OPT} --source $< --svsrc $< --top ${TOP_MODULE_SYNTH} --ila ${NAME}.ila.tcl -o $@
+	${TCLGEN} -T ${TCL_TEMPLATE} --projname build_${NAME} ${TCLGEN_SRC_OPT} --source $< --svsrc $< --top ${TOP_MODULE_SYNTH} --ila ${NAME}.ila.tcl --timing-xdc ${TIMING_XDC} -o $@
 notask.tcl: notask.v
-	${TCLGEN} -T ${TCL_TEMPLATE} --projname build_notask ${TCLGEN_SRC_OPT} --source notask.v --svsrc notask.v --top ${TOP_MODULE_SYNTH} -o $@
+	${TCLGEN} -T ${TCL_TEMPLATE} --projname build_notask ${TCLGEN_SRC_OPT} --source notask.v --svsrc notask.v --top ${TOP_MODULE_SYNTH} --timing-xdc ${TIMING_XDC} -o $@
 build_%: %.tcl %.v
 	mkdir $@
 	vivado -nolog -nojournal -mode tcl -source $< >$@/$@.log 2>&1
 
 report_util:
-	@${ILA_REPORT_UTIL} --module ${TOP_MODULE_SYNTH} ${SV2V_SYNTH}
+	@${ILA_REPORT_UTIL} --instance ${TOP_MODULE_SYNTH} ${SV2V_SYNTH}
 
 report_depth_sweep:
 	@for p in ${DEPTH_SWEEP_PREFIX}; do \
 		echo -e "\n### Depth Sweep of $${p}\n"; \
 		${REPORT_SWEEP} --mode=ILA --prefix build_$${p} \
-			--module ${TOP_MODULE_SYNTH} --pattern-depth; \
+			--instance ${TOP_MODULE_SYNTH} --pattern-depth; \
+	done
+
+report_timing:
+	echo $(foreach p, ${DEPTH_SWEEP_PREFIX}, build_$p*) ${SV2V_SYNTH}
+	@for d in $(foreach p, ${DEPTH_SWEEP_PREFIX}, build_$p*) ${SV2V_SYNTH}; do \
+		echo "Finding: $${d}/$${d}_timing_summary_routed.rpt"; \
+		if [ -f $${d}/$${d}_timing_summary_routed.rpt ]; then \
+			echo "Timing in $$d"; \
+			grep 'Design Timing Summary' -A 12 -B 1 $${d}/$${d}_timing_summary_routed.rpt; \
+		else \
+			echo "!!! No Timing Report in $$d"; \
+		fi \
 	done
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))

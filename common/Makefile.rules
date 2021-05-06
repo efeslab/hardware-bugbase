@@ -4,6 +4,7 @@
 # SYNTH_FILES_GEN: all automatic generated files for synthesis
 # DEPTH_SWEEP_PREFIX: a list of prefix, each should be expand to make target "build_${prefix}_d%"
 CODE_GEN+=notask.v
+CODE_GEN+=$(wildcard ${DEPTH_SWEEP_PREFIX}*.tcl)
 notask.v: ${RTL_SOURCES}
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} -o $@ --not-retag-synthesis sv2v
 

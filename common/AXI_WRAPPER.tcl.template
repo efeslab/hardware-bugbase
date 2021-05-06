@@ -1,0 +1,44 @@
+# Template dictionary
+#  <key>          <example value>
+# PROJNAME:         vivado_proj
+# PROJPATH:         xilinx-axi-lite-incomplete-implementation
+# SOURCES:          wrapper.v notask.v (' ' seperated)
+# SV_SRCS:          withtask.v (list)
+# TOP_MODULE:       xlnxdemo_wrapper
+# ILA_TCL:          ila.tcl ('' if not needed)
+# TIMING_XDC:       clk.xdc
+create_project {{PROJNAME}} {{PROJPATH}}/{{PROJNAME}} -part xc7k325tffg900-2
+set_property board_part xilinx.com:kc705:part0:1.6 [current_project]
+add_files -norecurse { {{SOURCES}} }
+{% for sv in SV_SRCS %}
+set_property file_type SystemVerilog [get_files  {{sv}}]
+{% endfor %}
+
+# set up ila
+{% if ILA_TCL != '' %}
+source {{ILA_TCL}}
+set_property generate_synth_checkpoint true [get_files  {{PROJPATH}}/{{PROJNAME}}/{{PROJNAME}}.srcs/sources_1/ip/ila_0/ila_0.xci]
+generate_target all [get_files {{PROJPATH}}/{{PROJNAME}}/{{PROJNAME}}.srcs/sources_1/ip/ila_0/ila_0.xci]
+synth_ip [get_files {{PROJPATH}}/{{PROJNAME}}/{{PROJNAME}}.srcs/sources_1/ip/ila_0/ila_0.xci]
+{% endif %}
+
+# set up timing
+{% if TIMING_XDC is defined %}
+add_files -norecurse { {{TIMING_XDC}} }
+set_property target_constrs_file {{TIMING_XDC}} [current_fileset -constrset]
+{% endif %}
+
+# set top-module
+set_property top {{TOP_MODULE}} [current_fileset]
+update_compile_order -fileset sources_1
+
+# implementation
+synth_design
+opt_design
+place_design
+route_design
+
+# report util
+report_utilization -hierarchical -file {{PROJPATH}}/{{PROJNAME}}/{{PROJNAME}}.util.rpt
+report_timing_summary -check_timing_verbose -routable_nets -delay_type min_max -max_paths 10 -file {{PROJPATH}}/{{PROJNAME}}/{{PROJNAME}}_timing_summary_routed.rpt -pb {{PROJPATH}}/{{PROJNAME}}/{{PROJNAME}}_timing_summary_routed.pb -rpx {{PROJPATH}}/{{PROJNAME}}/{{PROJNAME}}_timing_summary_routed.rpx -warn_on_violation
+exit
