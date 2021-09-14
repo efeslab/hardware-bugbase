@@ -4,7 +4,7 @@ TOP_MODULE?=ccip_std_afu_wrapper
 RTL_WORK_DIR?=work
 TEST_DIR?=test
 
-VERILATOR?=/home/jcma/verilator_origin/install/bin/verilator
+VERILATOR?=/home/jcma/veripass/verilator/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc -timescale-override 10ps/10ps
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-UNOPTFLAT -Wno-SPLITVAR -Wno-PINMISSING -Wno-LATCH -Wno-ALWCOMBORDER -Wno-TIMESCALEMOD
@@ -31,7 +31,7 @@ verilator:
 	$(MAKE) -C $(RTL_WORK_DIR) -f V$(TOP_MODULE).mk
 
 sw: verilator
-	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) -o $(TEST_BIN)
+	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) $(CXX_OPT) -o $(TEST_BIN)
 
 clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
