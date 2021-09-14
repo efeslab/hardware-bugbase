@@ -574,3 +574,96 @@ always @(posedge i_clk)
 3. The implementation in 2 is buggy, because if the instruction right after a taken-branch is a multi-cycle instruction, the EX stage will take a long time to finish, and it will backpressure the ID stage to prevent new instructions from being propagated.
 4. In a fix in 2018, when a branch is taken in EX (which means the instruction in ID is useless), the circuit will propagate a fake single cycle instruction (like a pipeline nop/bubble) to EX. The result of this fix is the code we say in the left side at the bottom of the page.
 5. However, for some reason (e.g., a weird combination of operands), the fix in 4 cannot handle all cases of "multi-cycle instruction followed by a taken branch" correctly (which causes Issue 434). Therefore, the author commits a more fundamental fix (the commit mentioned above). In this fix, when the decoder finds deassert_we_i is 1, it will set afu_en to 0. (In the previous code, alu_en is decided by the instruction being decoded, regardless of deassert_we_i.) As a result, the control flow won't enter the if case in line 1542, and the DIV instruction won't be propagated to EX.
+
+
+## 14. Failed to Reset (Vedrilog Axis)
+
+
+### Code
+```verilog
+module axis_frame_len #
+(
+    // Width of AXI stream interfaces in bits
+    parameter DATA_WIDTH = 64,
+    // Propagate tkeep signal
+    // If disabled, tkeep assumed to be 1'b1
+    parameter KEEP_ENABLE = (DATA_WIDTH>8),
+    // tkeep signal width (words per cycle)
+    parameter KEEP_WIDTH = (DATA_WIDTH/8),
+    // Width of length counter
+    parameter LEN_WIDTH = 16
+)
+(
+    input  wire                   clk,
+    input  wire                   rst,
+
+    /*
+     * AXI monitor
+     */
+    input  wire [KEEP_WIDTH-1:0]  monitor_axis_tkeep,
+    input  wire                   monitor_axis_tvalid,
+    input  wire                   monitor_axis_tready,
+    input  wire                   monitor_axis_tlast,
+
+    /*
+     * Status
+     */
+    output wire [LEN_WIDTH-1:0]   frame_len,
+    output wire                   frame_len_valid
+);
+
+reg [LEN_WIDTH-1:0] frame_len_reg = 0, frame_len_next;
+reg frame_len_valid_reg = 1'b0, frame_len_valid_next;
+reg frame_reg = 1'b0, frame_next;
+
+assign frame_len = frame_len_reg;
+assign frame_len_valid = frame_len_valid_reg;
+
+integer offset, i, bit_cnt;
+
+always @* begin
+    frame_len_next = frame_len_reg;
+    frame_len_valid_next = 1'b0;
+    frame_next = frame_reg;
+
+    if (monitor_axis_tready && monitor_axis_tvalid) begin
+        // valid transfer cycle
+
+        if (monitor_axis_tlast) begin
+            // end of frame
+            frame_len_valid_next = 1'b1;
+            frame_next = 1'b0;
+        end else if (!frame_reg) begin
+        // The bug occurs when two back-to-back data transfer packets come (with tlast set on every transfer), then this "else if" block won't be accessed, and the frame_len_next can't be reset correctly.
+
+            frame_len_next = 0;
+            frame_next = 1'b1;
+        end
+
+        // increment frame length by number of words transferred
+        if (KEEP_ENABLE) begin
+            bit_cnt = 0;
+            for (i = 0; i <= KEEP_WIDTH; i = i + 1) begin
+                if (monitor_axis_tkeep == ({KEEP_WIDTH{1'b1}}) >> (KEEP_WIDTH-i)) bit_cnt = i;
+            end
+            frame_len_next = frame_len_next + bit_cnt;
+        end else begin
+            frame_len_next = frame_len_next + 1;
+        end
+    end
+end
+
+always @(posedge clk) begin
+    if (rst) begin
+        frame_len_reg <= 0;
+        frame_len_valid_reg <= 0;
+        frame_reg <= 1'b0;
+    end else begin
+        frame_len_reg <= frame_len_next;
+        frame_len_valid_reg <= frame_len_valid_next;
+        frame_reg <= frame_next;
+    end
+end
+
+endmodule
+```
