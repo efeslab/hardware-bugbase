@@ -33,7 +33,7 @@ verilator:
 	$(MAKE) -C $(RTL_WORK_DIR) -f V$(TOP_MODULE).mk
 
 sw: verilator
-	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) -o $(TEST_BIN)
+	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) $(CXX_OPT) -o $(TEST_BIN)
 
 clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
