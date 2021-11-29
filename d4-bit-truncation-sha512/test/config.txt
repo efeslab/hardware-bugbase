@@ -1,0 +1,11 @@
+0 softreset len=300000
+3160000 mmio_wr tid=003 addr=0044 val=0000040000000000
+3200000 mmio_wr tid=004 addr=0046 val=0
+3240000 mmio_wr tid=005 addr=0046 val=1
+3280000 mmio_wr tid=006 addr=0048 val=000001fe59b02d8f
+3320000 mmio_wr tid=007 addr=004a val=1
+3360000 mmio_wr tid=008 addr=004c val=000001fe59b01d8f
+3400000 mmio_wr tid=009 addr=004e val=2
+3440000 mmio_wr tid=00a addr=0046 val=3
+expect mem_rd addr=1fe59b01d8f timer=delay,25000 val=any
+expect mem_rd addr=1fe59b01d90 timer=delay,25000 val=any

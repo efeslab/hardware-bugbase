@@ -4,14 +4,14 @@ TOP_MODULE?=ccip_std_afu_wrapper
 RTL_WORK_DIR?=work
 TEST_DIR?=test
 
-VERILATOR?=/home/jcma/veripass/verilator/bin/verilator
+VERILATOR=../../veripass/verilator/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc -timescale-override 10ps/10ps
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
 				-Wno-CASEX -Wno-TIMESCALEMOD -Wno-VLTAG
 VERILATOR_OPT+= -trace-fst -trace-structs
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
-VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)
+VERILATOR_ROOT=../../veripass/verilator
 
 CXX?= g++
 CXX_OPT?=
@@ -38,10 +38,7 @@ clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
 
 sim:
-	@echo "BUG 1: Valid Bit Uncleared"
 	./$(TEST_BIN)
-	@echo "BUG 2: Bit Cast Error"
-	@echo "At rtl/sha512_csr.sv:103, bit 42-47 will be ignored. No assertion available."
 
 wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &

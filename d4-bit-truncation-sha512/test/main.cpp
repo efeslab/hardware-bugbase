@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     Verilated::traceEverOn(true);
     VerilatedFstC *trace = new VerilatedFstC;
     tb->trace(trace, 99);
-    trace->open("grayscale.fst");
+    trace->open("sha512.fst");
 
     vector<pkt_entry*> long_term, c0tx_listen, c1tx_listen, c2tx_listen;
     priority_queue<pkt_entry*, vector<pkt_entry*>, pkt_entry_ptr_compare> control;
