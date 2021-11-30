@@ -12,7 +12,7 @@ VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CAS
 				-Wno-CASEX -Wno-TIMESCALEMOD -Wno-PINMISSING -Wno-ALWCOMBORDER -Wno-VLTAG
 VERILATOR_OPT+= -trace-fst -trace-structs -comp-limit-syms 0
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
-VERILATOR_ROOT=../../veripass/verilator
+VERILATOR_ROOT=$(CURDIR)/../../veripass/verilator
 
 CXX?= g++
 CXX_OPT?=
