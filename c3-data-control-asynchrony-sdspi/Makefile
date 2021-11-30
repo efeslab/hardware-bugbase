@@ -4,14 +4,14 @@ TOP_MODULE?=sdspi
 RTL_WORK_DIR?=work
 TEST_DIR?=bench/cpp
 
-VERILATOR?=/home/jcma/veripass/verilator/bin/verilator
+VERILATOR=../../veripass/verilator/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
 				-Wno-CASEX -Wno-TIMESCALEMOD
 VERILATOR_OPT+= -trace -trace-structs
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
-VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)
+VERILATOR_ROOT=../../veripass/verilator
 
 CXX?= g++
 CXX_OPT?=

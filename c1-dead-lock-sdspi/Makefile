@@ -4,14 +4,14 @@ TOP_MODULE?=sdspi
 RTL_WORK_DIR?=work
 TEST_DIR?=bench/cpp
 
-VERILATOR?=/home/jcma/veripass/verilator/bin/verilator
+VERILATOR=../../veripass/verilator/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
 				-Wno-CASEX -Wno-TIMESCALEMOD
 VERILATOR_OPT+= -trace -trace-structs
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
-VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)
+VERILATOR_ROOT=../../veripass/verilator
 
 CXX?= g++
 CXX_OPT?=
@@ -41,8 +41,9 @@ clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst *.img
 
 sim:
-	@echo "BUG 1: Press Ctrl-C, then take a look of waveform. The sdcard clock o_sclk is not generated. The root cause is at rtl/llsdspi.v:182."
-	./$(TEST_BIN)
+	@echo -e "\033[0;31mAssertion is not available. Please wait for 3 seconds and the simulation will be killed.\033[0m"
+	@echo -e "\033[0;31mPlease take a look of waveform. The sdcard clock o_sclk is not generated. The root cause is at rtl/llsdspi.v:182.\033[0m"
+	timeout 3 ./$(TEST_BIN)
 
 wave:
 	gtkwave trace.vcd > /dev/null 2>/dev/null &
