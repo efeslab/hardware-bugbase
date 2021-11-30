@@ -3,14 +3,14 @@ RTL_SOURCES?=sources0
 TOP_MODULE?=testbench
 TEST_DIR?=test
 
-VERILATOR?=/home/jcma/veripass/verilator/bin/verilator
+VERILATOR=../../veripass/verilator/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc -timescale-override 10ps/10ps
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
 				-Wno-CASEX -Wno-PINMISSING
 VERILATOR_OPT+= -trace-fst -trace-structs
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
-VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)
+VERILATOR_ROOT=../../veripass/verilator
 
 CXX?= g++
 CXX_OPT?=
@@ -41,15 +41,15 @@ wave:
 
 # for resouce-util synthesize
 RTL_SOURCES=sources.txt
-TOP_MODULE=xlnxstream_2018_3
+VERIPASS_TOP_MODULE=xlnxstream_2018_3
 TOP_MODULE_SYNTH=xlnxstream_2018_3_wrapper
 TCLGEN_SRCS=vivado_synth/xlnxstream_2018_3_wrapper.v
 SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug7.v
 withtask.v: ${RTL_SOURCES} bug7.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug7.instrument.cfg --reset "!M_AXIS_ARESETN"
+	${TOOLS} --top ${VERIPASS_TOP_MODULE} -F ${RTL_SOURCES} --config bug7.instrument.cfg --reset "!M_AXIS_ARESETN"
 
 DEPTH_SWEEP_PREFIX+=depth_sweep_bug7
 depth_sweep_bug7_d%.v: ${RTL_SOURCES} bug7.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug7.instrument.cfg --reset "!M_AXIS_ARESETN" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
+	${TOOLS} --top ${VERIPASS_TOP_MODULE} -F ${RTL_SOURCES} --config bug7.instrument.cfg --reset "!M_AXIS_ARESETN" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
 include ../common/Makefile.ILA.rules
