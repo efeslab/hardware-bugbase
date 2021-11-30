@@ -46,12 +46,8 @@ all: fft_tb
 OBJDR:= ../obj_dir
 VSRCD = ../hex
 TBODR:= ../obj_dir
-ifneq ($(VERILATOR_ROOT),)
-VERILATOR:=$(VERILATOR_ROOT)/bin/verilator
-else
-VERILATOR:=verilator
-VERILATOR_ROOT ?= $(shell bash -c 'verilator -V|grep VERILATOR_ROOT | head -1 | sed -e " s/^.*=\s*//"')
-endif
+VERILATOR=../../../veripass/verilator/bin/verilator
+VERILATOR_ROOT=../../../veripass/verilator
 export	$(VERILATOR)
 VROOT   := $(VERILATOR_ROOT)
 VDEFS:= $(shell ./vversion.sh)
@@ -62,13 +58,13 @@ VSRCS:= $(VROOT)/include/verilated.cpp $(VROOT)/include/verilated_vcd_c.cpp
 tb: fft_tb
 
 fft_tb: fft_tb.cpp twoc.cpp twoc.h fftsize.h $(FFTLB)
-	g++ -g $(VINC) $(VDEFS) $< twoc.cpp $(FFTLB) $(VSRCS) -lfftw3 -o $@
+	g++ -g $(VINC) $(VDEFS) $< twoc.cpp $(FFTLB) $(VSRCS) -o $@
 
 .PHONY: HEX
 HEX:
 	ln -sf $(VSRCD)/*.hex .
 
-test: fft_tb HEX # ifft_tb
+test: HEX fft_tb
 	./fft_tb
 
 .PHONY: clean

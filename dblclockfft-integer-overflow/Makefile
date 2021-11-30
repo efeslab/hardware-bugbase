@@ -3,8 +3,9 @@ RTL_SOURCES?=source.txt
 TOP_MODULE?=fftmain
 all: verilator sw
 
+VERILATOR=../../veripass/verilator/bin/verilator
 verilator:
-	verilator -cc -F source.txt -top-module fftmain -Wno-TIMESCALEMOD --trace --assert -Wno-PINMISSING -Wno-VLTAG
+	$(VERILATOR) -cc -F source.txt -top-module fftmain -Wno-TIMESCALEMOD --trace --assert -Wno-PINMISSING -Wno-VLTAG
 	cd obj_dir; $(MAKE) -f Vfftmain.mk
 
 sw: verilator
@@ -16,6 +17,7 @@ clean:
 
 sim:
 	cd test; $(MAKE) test
+	@echo "You can compare the expected output and the actual output to find the difference"
 
 wave:
 	gtkwave test/*.vcd >/dev/null 2>/dev/null &
