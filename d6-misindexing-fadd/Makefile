@@ -1,17 +1,18 @@
 include ../common/Makefile.env
+SIM_SOURCES?=sources-sim.txt
 RTL_SOURCES?=sources-veripass.txt
-TOP_MODULE?=fadd
+SIM_TOP_MODULE?=fadd
 RTL_WORK_DIR?=work
 TEST_DIR?=test
 
-VERILATOR?=/home/jcma/veripass/verilator/bin/verilator
+VERILATOR=../../veripass/verilator/bin/verilator
 VERILATOR_OPT?=
 VERILATOR_OPT+= -cc
 VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
 				-Wno-CASEX -Wno-TIMESCALEMOD -Wno-UNSIGNED
 VERILATOR_OPT+= -trace-fst -trace-structs
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
-VERILATOR_ROOT?=$(shell $(VERILATOR) -getenv VERILATOR_ROOT)
+VERILATOR_ROOT=../../veripass/verilator
 
 CXX?= g++
 CXX_OPT?=
@@ -22,14 +23,14 @@ VERILATOR_CXX_FILES?= $(VERILATOR_ROOT)/include/verilated.cpp
 VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_vcd_c.cpp
 VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_fst_c.cpp
 TEST_CXX_FILES?=$(shell find $(TEST_DIR) -name '*.cpp')
-TEST_RTL_SIMLIB?=$(RTL_WORK_DIR)/V$(TOP_MODULE)__ALL.a
+TEST_RTL_SIMLIB?=$(RTL_WORK_DIR)/V$(SIM_TOP_MODULE)__ALL.a
 TEST_BIN?= fadd_test
 
 all: clean verilator sw
 
 verilator:
-	$(VERILATOR) $(VERILATOR_OPT) -F $(RTL_SOURCES) -top-module $(TOP_MODULE) --Mdir $(RTL_WORK_DIR)
-	$(MAKE) -C $(RTL_WORK_DIR) -f V$(TOP_MODULE).mk
+	$(VERILATOR) $(VERILATOR_OPT) -F $(SIM_SOURCES) -top-module $(SIM_TOP_MODULE) --Mdir $(RTL_WORK_DIR)
+	$(MAKE) -C $(RTL_WORK_DIR) -f V$(SIM_TOP_MODULE).mk
 
 sw: verilator
 	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) $(CXX_OPT) -o $(TEST_BIN)
