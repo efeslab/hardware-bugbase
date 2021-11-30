@@ -3,7 +3,8 @@ RTL_SOURCES?=source.txt
 TOP_MODULE?=fftmain
 all: verilator sw
 
-VERILATOR=../../veripass/verilator/bin/verilator
+VERILATOR=$(CURDIR)/../../veripass/verilator/bin/verilator
+VERILATOR_ROOT=$(CURDIR)/../../veripass/verilator
 verilator:
 	$(VERILATOR) -cc -F source.txt -top-module fftmain -Wno-TIMESCALEMOD --trace --assert -Wno-PINMISSING -Wno-VLTAG
 	cd obj_dir; $(MAKE) -f Vfftmain.mk
