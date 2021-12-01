@@ -4,3 +4,4 @@ work/
 *.vcd
 *.img
 sdspi_tb
+bug9.v
