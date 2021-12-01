@@ -39,6 +39,7 @@ sw: verilator
 
 clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst *.img
+	rm -rf build_* withtask.* notask.* bug9.v
 
 sim:
 	@echo -e "\033[0;31mAssertion is not available. Please wait for 3 seconds and the simulation will be killed.\033[0m"

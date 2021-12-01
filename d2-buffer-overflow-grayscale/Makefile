@@ -34,7 +34,7 @@ sw: verilator
 	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) $(CXX_OPT) -o $(TEST_BIN)
 
 clean:
-	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
+	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst withtask.v notask.v *.displayinfo.txt *.widthinfo.txt
 
 sim:
 	@echo "BUG 1: Buffer Overflow"
@@ -52,3 +52,4 @@ DEPTH_SWEEP_PREFIX+=depth_sweep_bug4
 depth_sweep_bug4_d%.v: ${RTL_SOURCES} bug4.instrument.cfg
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug4.instrument.cfg --reset ccip_std_afu__DOT__afu_async__DOT__reset --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
 include ../common/Makefile.STP.rules
+

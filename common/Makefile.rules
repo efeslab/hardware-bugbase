@@ -8,6 +8,8 @@ CODE_GEN+=$(wildcard ${DEPTH_SWEEP_PREFIX}*.tcl)
 notask.v: ${RTL_SOURCES}
 	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} -o $@ --not-retag-synthesis sv2v
 
+sv2v: notask.v
+
 .PHONY: clean_synth synth clean_codegen
 clean_synth: clean_codegen
 	rm -rf ${SV2V_SYNTH} ${SYNTH_FILES_GEN}

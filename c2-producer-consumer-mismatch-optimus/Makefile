@@ -37,6 +37,7 @@ sw: verilator
 
 clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
+	rm -f build_* withtask.* notask.* sources.withtask.txt sources.notask.txt bug5_step4.v
 
 sim:
 	./$(TEST_BIN) test/config-1.txt optimus_produder_consumer.fst
