@@ -12,3 +12,4 @@ sources.losscheck.0.txt
 sources.losscheck.1.txt
 work_losscheck_1/
 filter.txt
+grayscale_test_losscheck

@@ -28,7 +28,7 @@ VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_vcd_c.cpp
 VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_fst_c.cpp
 TEST_CXX_FILES?=$(shell find $(TEST_DIR) -name '*.cpp')
 TEST_RTL_SIMLIB?=$(LC_RTL_WORK_DIR)/V$(TOP_MODULE)__ALL.a
-TEST_BIN?= grayscale_test
+TEST_BIN?= grayscale_test_losscheck
 
 all: clean verilator sw
 
