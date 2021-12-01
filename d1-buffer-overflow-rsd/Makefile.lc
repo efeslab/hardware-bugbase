@@ -63,7 +63,7 @@ sw: verilator
 
 clean:
 	rm -rf $(LC_RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst withtask.v notask.v $(LC_RTL_WORK_DIR) $(LC_RTL_SOURCES_0) $(LC_RTL_SOURCES_1) $(LC_RTL_SOURCES_OPAE_0) $(LC_RTL_SOURCES_OPAE_1) filter.txt build_sim_origin
-	rm -rf $(LC_GEN_FILE_0) $(LC_GEN_FILE_1) *.displayinfo.txt *.widthinfo.txt
+	rm -rf $(LC_GEN_FILE_0) $(LC_GEN_FILE_1) *.displayinfo.txt *.widthinfo.txt withlosscheck.v
 	cd origin_test; $(MAKE) clean
 
 sim:
@@ -73,13 +73,14 @@ sim:
 wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &
 
-SV2V_OUT_FILES+=withtask
-# bug3: RSD-BufferOverflow
-CODE_GEN+=withtask.v bug3_step3.v
-withtask.v: ${RTL_SOURCES} bug3.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug3.instrument.cfg
+$(LC_GEN_FILE_1): losscheck1
 
-DEPTH_SWEEP_PREFIX+=depth_sweep_bug3
-depth_sweep_bug3_d%.v: ${RTL_SOURCES} bug3.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug3.instrument.cfg --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
+SV2V_OUT_FILES+=withlosscheck
+withlosscheck.v: $(LC_GEN_FILE_1)
+	cp $(LC_GEN_FILE_1) withlosscheck.v
+	echo -e "\n" >> withlosscheck.v
+	cat $(VERIPASS_PATH)/model/dcfifo_simple_model.v >> withlosscheck.v
+	echo -e "\n" >> withlosscheck.v
+	cat $(VERIPASS_PATH)/model/scfifo_simple_model.v >> withlosscheck.v
+
 include ../common/Makefile.STP.rules

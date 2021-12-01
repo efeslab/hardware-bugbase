@@ -1,6 +1,6 @@
 SV2V_OUT_FILES+=notask
 SYNTH_FILES_GEN=$(foreach f, ${SV2V_OUT_FILES}, sources.$(f).txt)
-SV2V_SYNTH=$(foreach f, ${SV2V_OUT_FILES}, build_$(f))
+SV2V_SYNTH?=$(foreach f, ${SV2V_OUT_FILES}, build_$(f))
 SYNTH_AFU_JSON=../common/cci_afu.json
 SYNTH_CCIP_DEWRAPPER=../common/ccip_dewrapper.sv
 

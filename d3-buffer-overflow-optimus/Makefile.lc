@@ -72,13 +72,15 @@ sim:
 wave:
 	gtkwave optimus_overflow.fst > /dev/null 2>/dev/null &
 
-SV2V_OUT_FILES+=withtask
-# bug5: Optimus-BufferOverflow and Optimus-SignalConflict
-CODE_GEN+=withtask.v bug5_step4.v
-withtask.v: ${RTL_SOURCES} bug5.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug5.instrument.cfg --reset ccip_std_afu__DOT__ccip_mux_U0__DOT__reset
 
-DEPTH_SWEEP_PREFIX+=depth_sweep_bug5
-depth_sweep_bug5_d%.v: ${RTL_SOURCES} bug5.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug5.instrument.cfg --reset ccip_std_afu__DOT__ccip_mux_U0__DOT__reset --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
+$(LC_GEN_FILE_1): losscheck1
+
+SV2V_OUT_FILES+=withlosscheck
+withlosscheck.v: $(LC_GEN_FILE_1)
+	cp $(LC_GEN_FILE_1) withlosscheck.v
+	echo -e "\n" >> withlosscheck.v
+	cat $(VERIPASS_PATH)/model/dcfifo_simple_model.v >> withlosscheck.v
+	echo -e "\n" >> withlosscheck.v
+	cat $(VERIPASS_PATH)/model/scfifo_simple_model.v >> withlosscheck.v
+
 include ../common/Makefile.STP.rules
