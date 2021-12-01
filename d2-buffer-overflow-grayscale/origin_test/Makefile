@@ -1,7 +1,7 @@
 CXX = g++
 ARGS = -O2 -g
 LIBS = -L/home/jcma/.local/lib -I/home/jcma/.local/include -lhardcloud -lMPF_VAI -lvai-c-ase -lpng
-TARGET = gaussian
+TARGET = grayscale
 SRCS = main.cpp image.cpp
 SRCS_FILES = $(foreach F, $(SRCS), $(F))
 

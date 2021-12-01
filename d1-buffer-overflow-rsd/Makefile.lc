@@ -50,8 +50,8 @@ losscheck1: origin_sim
 origin_sim: losscheck0
 	rm -rf build_sim_origin
 	vai_sim_setup -s $(LC_RTL_SOURCES_OPAE_0) build_sim_origin
-	cd build_sim_origin; $(MAKE); $(MAKE) sim | tee log.txt &
-	sleep 1; cd origin_test; $(MAKE); export ASE_WORKDIR=$(CURDIR)/build_sim_origin/work; timeout 3 ./reed_solomon_decoder 10; echo -e "Simulation Done\n\n";
+	cd build_sim_origin; make; make sim | tee log.txt &
+	sleep 1; cd origin_test; make; export ASE_WORKDIR=$(CURDIR)/build_sim_origin/work; timeout 3 ./reed_solomon_decoder 10; echo -e "Simulation Done\n\n";
 	cat build_sim_origin/log.txt | grep "\%loss" | awk '{print $$3 "\t" $$4 "\t" $$5}' | sort | uniq -c | awk '{print $$2 "\t" $$3 "\t" $$4}' | tee filter.txt
 
 verilator: losscheck1

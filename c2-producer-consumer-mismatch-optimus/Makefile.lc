@@ -7,13 +7,14 @@ LC_RTL_SOURCES_OPAE_1=sources.losscheck-opae.1.txt
 TOP_MODULE?=ccip_std_afu_wrapper
 LC_RTL_WORK_DIR?=work_losscheck_1
 TEST_DIR?=test
-LC_GEN_FILE_0=grayscale.losscheck.0.v
-LC_GEN_FILE_1=grayscale.losscheck.1.v
+LC_GEN_FILE_0=optimus.losscheck.0.v
+LC_GEN_FILE_1=optimus.losscheck.1.v
 
 VERILATOR=../../veripass/verilator/bin/verilator
 VERILATOR_OPT?=
-VERILATOR_OPT+= -cc -timescale-override 10ps/10ps
-VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE -Wno-CASEX -Wno-UNOPTFLAT -Wno-SPLITVAR -Wno-PINMISSING -Wno-ALWCOMBORDER -Wno-TIMESCALEMOD -Wno-VLTAG
+VERILATOR_OPT+= -cc
+VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
+				-Wno-CASEX -Wno-TIMESCALEMOD -Wno-PINMISSING -Wno-ALWCOMBORDER -Wno-VLTAG
 VERILATOR_OPT+= -trace-fst -trace-structs -comp-limit-syms 0
 VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
 VERILATOR_ROOT=$(CURDIR)/../../veripass/verilator
@@ -28,19 +29,19 @@ VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_vcd_c.cpp
 VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_fst_c.cpp
 TEST_CXX_FILES?=$(shell find $(TEST_DIR) -name '*.cpp')
 TEST_RTL_SIMLIB?=$(LC_RTL_WORK_DIR)/V$(TOP_MODULE)__ALL.a
-TEST_BIN?= grayscale_test_losscheck
+TEST_BIN?= optimus_grayscale_mux4_test_losscheck
 
 all: clean verilator sw
 
 losscheck0:
-	$(VERIPASS_PATH)/losscheck.py --top $(TOP_MODULE) -F $(RTL_SOURCES) -o $(LC_GEN_FILE_0) --source c0Rx_data --sink c1Tx_data --source-valid c0Rx_rspValid --reset pck_cp2af_softReset --ignore-stop
+	$(VERIPASS_PATH)/losscheck.py --top $(TOP_MODULE) -F $(RTL_SOURCES) -o $(LC_GEN_FILE_0) --source c0Rx_data --sink c0Tx_hdr --source-valid c0Rx_mmioWrValid --reset pck_cp2af_softReset --ignore-stop
 	@echo -e "$(LC_GEN_FILE_0)\n../common/altera/altera_mf.v\n../common/altera/220model.v" > $(LC_RTL_SOURCES_0)
 	@echo -e "$(VERIPASS_PATH)/model/dcfifo_simple_model.v\n$(VERIPASS_PATH)/model/scfifo_simple_model.v" >> $(LC_RTL_SOURCES_0)
 	@echo -e "$(LC_GEN_FILE_0)\n../common/ccip_dewrapper.sv\n../common/cci_afu.json\n" > $(LC_RTL_SOURCES_OPAE_0)
 	@echo -e "$(VERIPASS_PATH)/model/dcfifo_simple_model.v\n$(VERIPASS_PATH)/model/scfifo_simple_model.v" >> $(LC_RTL_SOURCES_OPAE_0)
 
 losscheck1: origin_sim
-	$(VERIPASS_PATH)/losscheck.py --top $(TOP_MODULE) -F $(RTL_SOURCES) -o $(LC_GEN_FILE_1) --source c0Rx_data --sink c1Tx_data --source-valid c0Rx_rspValid --reset pck_cp2af_softReset --ignore-stop --filtered-list filter.txt
+	$(VERIPASS_PATH)/losscheck.py --top $(TOP_MODULE) -F $(RTL_SOURCES) -o $(LC_GEN_FILE_1) --source c0Rx_data --sink c0Tx_hdr --source-valid c0Rx_mmioWrValid --reset pck_cp2af_softReset --ignore-stop --filtered-list filter.txt
 	@echo -e "$(LC_GEN_FILE_1)\n../common/altera/altera_mf.v\n../common/altera/220model.v" > $(LC_RTL_SOURCES_1)
 	@echo -e "$(VERIPASS_PATH)/model/dcfifo_simple_model.v\n$(VERIPASS_PATH)/model/scfifo_simple_model.v" >> $(LC_RTL_SOURCES_1)
 	@echo -e "$(LC_GEN_FILE_1)\n../common/ccip_dewrapper.sv\n../common/cci_afu.json\n" > $(LC_RTL_SOURCES_OPAE_1)
@@ -50,7 +51,7 @@ origin_sim: losscheck0
 	rm -rf build_sim_origin
 	vai_sim_setup -s $(LC_RTL_SOURCES_OPAE_0) build_sim_origin
 	cd build_sim_origin; make; make sim | tee log.txt &
-	sleep 1; cd origin_test; make; export ASE_WORKDIR=$(CURDIR)/build_sim_origin/work; timeout 2 ./grayscale 1; echo -e "Simulation Done\n\n";
+	sleep 1; cd origin_test; make; export ASE_WORKDIR=$(CURDIR)/build_sim_origin/work; timeout 20 ./grayscale 1; echo -e "Simulation Done\n\n";
 	cat build_sim_origin/log.txt | grep "\%loss" | awk '{print $$3 "\t" $$4 "\t" $$5}' | sort | uniq -c | awk '{print $$2 "\t" $$3 "\t" $$4}' | tee filter.txt
 
 verilator: losscheck1
@@ -66,19 +67,18 @@ clean:
 	cd origin_test; $(MAKE) clean
 
 sim:
-	@echo "BUG 1: Buffer Overflow"
-	./$(TEST_BIN)
+	timeout 10 ./$(TEST_BIN) test/config-1.txt optimus_produder_consumer.fst
 
 wave:
-	gtkwave *.fst >/dev/null 2>/dev/null &
+	gtkwave optimus_produder_consumer.fst > /dev/null 2>/dev/null &
 
 SV2V_OUT_FILES+=withtask
-# bug4: Grayscale-BufferOverflow
-CODE_GEN+=withtask.v bug4_step2.v
-withtask.v: ${RTL_SOURCES} bug4.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug4.instrument.cfg --reset ccip_std_afu__DOT__afu_async__DOT__reset
-DEPTH_SWEEP_PREFIX+=depth_sweep_bug4
-depth_sweep_bug4_d%.v: ${RTL_SOURCES} bug4.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug4.instrument.cfg --reset ccip_std_afu__DOT__afu_async__DOT__reset --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
-include ../common/Makefile.STP.rules
+# bug5: Optimus-BufferOverflow and Optimus-SignalConflict
+CODE_GEN+=withtask.v bug5_step4.v
+withtask.v: ${RTL_SOURCES} bug5.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug5.instrument.cfg --reset ccip_std_afu__DOT__ccip_mux_U0__DOT__reset
 
+DEPTH_SWEEP_PREFIX+=depth_sweep_bug5
+depth_sweep_bug5_d%.v: ${RTL_SOURCES} bug5.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug5.instrument.cfg --reset ccip_std_afu__DOT__ccip_mux_U0__DOT__reset --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\"}"
+include ../common/Makefile.STP.rules
