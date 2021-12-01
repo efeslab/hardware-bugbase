@@ -3,3 +3,13 @@ work/
 *.fst
 *.vcd
 grayscale_mux4_test
+filter.txt
+optimus.losscheck.0.v
+optimus.losscheck.1.v
+optimus_grayscale_mux4_test_losscheck
+origin_test/
+sources.losscheck-opae.0.txt
+sources.losscheck-opae.1.txt
+sources.losscheck.0.txt
+sources.losscheck.1.txt
+work_losscheck_1/
