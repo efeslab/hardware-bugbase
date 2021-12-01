@@ -3,3 +3,13 @@ work/
 *.fst
 *.vcd
 reed_solomon_decoder_test
+rsd.losscheck.0.v
+rsd.losscheck.1.v
+origin_test/gaussian
+sources.losscheck-opae.0.txt
+sources.losscheck-opae.1.txt
+sources.losscheck.0.txt
+sources.losscheck.1.txt
+work_losscheck_1/
+filter.txt
+reed_solomon_decoder_test_losscheck
