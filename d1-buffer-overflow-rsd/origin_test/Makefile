@@ -1,6 +1,6 @@
 CXX = g++
 ARGS = -O2
-LIBS = -I/home/jcma/.local/include -L/home/jcma/.local/lib -lhardcloud -lMPF_VAI -lvai-c-ase
+LIBS = -L../../common/libvai/lib -I../../common/libvai/include -lhardcloud -lMPF_VAI -lvai-c-ase
 TARGET = reed_solomon_decoder
 SRCS = main.cpp
 SRCS_FILES = $(foreach F, $(SRCS), $(F))
