@@ -19,6 +19,8 @@ report_depth_sweep:
 		echo -e "\n### Depth Sweep of $${p}\n"; \
 		${REPORT_SWEEP} --mode=STP --prefix build_$${p} --pattern-depth;\
 	done
+	@echo
+	@${STP_REPORT_UTIL} build_notask
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))

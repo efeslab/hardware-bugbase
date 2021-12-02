@@ -29,6 +29,8 @@ report_depth_sweep:
 		${REPORT_SWEEP} --mode=ILA --prefix build_$${p} \
 			--instance ${TOP_MODULE_SYNTH} --pattern-depth; \
 	done
+	@echo
+	@${ILA_REPORT_UTIL} --instance ${TOP_MODULE_SYNTH} build_notask
 
 report_timing:
 	echo $(foreach p, ${DEPTH_SWEEP_PREFIX}, build_$p*) ${SV2V_SYNTH}

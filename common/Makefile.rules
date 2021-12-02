@@ -26,4 +26,4 @@ verilator_onefile: ${VERILATOR_ONEFILE} clean
 
 # depth sweep
 DEPTH_SWEEP_TARGETS=$(foreach prefix, ${DEPTH_SWEEP_PREFIX}, $(foreach d, ${DEPTH_SWEEP}, build_${prefix}_d${d}))
-sweep_depth: ${DEPTH_SWEEP_TARGETS}
+sweep_depth: ${DEPTH_SWEEP_TARGETS} build_notask
