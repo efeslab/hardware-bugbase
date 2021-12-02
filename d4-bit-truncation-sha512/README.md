@@ -1,48 +1,25 @@
-### Source
-sha512: https://github.com/efeslab/hardcloud/tree/e28ca96fdbb67904ef909fb04e026cf6dc724198/samples/sha512
+# D4 - Bit Truncation - SHA512
 
-### Simplifed Code
-#### Bug 1: Valid Signal Uncleared
-``` verilog
-typedef enum {
-  DO_IDLE,
-  DO_WORK,
-  DO_RESULT
- } state_t;
-state_t state;
- 
-initial state = DO_IDLE;
-always_ff @(posedge clk) begin
-  case (state)
-    DO_IDLE: if (start) state <= DO_WORK;
-    DO_WORK: if (finish) state <= DO_RESULT;
-    DO_RESULT: state <= DO_IDLE;
-  endcase
-end
- 
-always_ff @(posedge clk) begin
-  if (reset) begin
-    valid <= 0;
-    data <= 0;
-  end
-  else begin
-    case (state)
-      DO_WORK:
-        if (result_valid) begin
-          valid <= 1; data <= get_result();
-        end;
-      DO_RESULT:
-        valid <= 1;
-        data <= get_result_summary();
-        // The valid bit will still be 1 in the next cycle, because DO_IDLE does not clear it.
-    endcase
-  end
-end
-```
- 
-#### Bug 2: Assign 64bit to 42bit
+Code: https://github.com/efeslab/hardcloud/tree/e28ca96fdbb67904ef909fb04e026cf6dc724198/samples/sha512
+
+This bug occurs in the memory requestor of an SHA512 accelerator. CPU-side software configure the accelerator with the location of the data to be hashed by writing the address to the accelerator. Because the accelerator can only access memory at cacheline granularity, it needs to translate a normal memory address to a cacheline address by erasing both the least significant bits (because they must be 0) and the most significant bits (because they are not supported by the memory bus).
+
+Unfortunately, the accelerator performs a width conversion before doing the shift; as a result, some meaningful bits (i.e., bit 42-47) are erased.
+
+This bug would cause the accelerator to access an invalid address, thus triggering an IOMMU page fault which freezes the whole accelerator.
+
+### Synthetic Code
 ``` verilog
 logic [41:0] left;
 logic [63:0] right;
 assign left = 42'(right) >> 6;
 ```
+
+To fix the bug, simply change the third line to:
+
+```verilog
+assign left = 42'(right >> 6);
+```
+
+
+

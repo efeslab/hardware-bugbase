@@ -1,5 +1,12 @@
-### Source
-BBB: https://github.com/efeslab/optimus-intel-fpga-bbb/tree/d639624652e4cf1173677a3e8bb7fc16f53ae433
+# C2 - Producer-Consumer Mismatch - Optimus
+
+BBB Commit: https://github.com/efeslab/optimus-intel-fpga-bbb/tree/d639624652e4cf1173677a3e8bb7fc16f53ae433
+
+The hardware part of Optimus hypervisor is connected to 4 grayscale accelerators. The bug is in the memory channel of the hypervisor, and is not related to the accelerator. However, when the producer-consumer mismatch occurs, some memory request packets issued by the accelerator would lost, causing the accelerator to stuck.
+
+This bug is never "fixed" in Optimus. The authors noticed the bug and cannot find the root cause. As a result, they redesigned the memory channel and reimplemented it to work around this bug.
+
+Details of the bug is explained in the comments of the following synthetic code.
 
 ### Synthetic Code
 ```verilog
@@ -56,9 +63,8 @@ module test (
 	end
 
 	// This module may or may not generate data output at each cycle.
-	// It takes 11 cycles to respond to the almfull signals.
-	// send out most N packets after almfull is set
-	weird_module weird_inst(
+	// It takes 11 cycles to respond to the almfull signals and may send out at most N packets after the almfull bit is set.
+  weird_module weird_inst(
 		.clk(clk),
 		.almfull(almfull),
 		.data(data),
@@ -78,34 +84,29 @@ module test (
 			balance <= balance + 1;
 		else
 			balance <= balance;
-
-		// Here, balance >= F(N) indicates you should start buffering requests when you already sent F(N) (some function of N, depends on reading the waveform).
-		// The circuit is supposed to send out at most 7 packets after almfull is asserted.
-		// However, there may be at more extra packets that needs to be stored than the size of the buffer, which causes buffer overflow.
-		// The smaller the buffer size, the sooner the overflow will happen. You can completely avoid overflow by using a big buffer.
-		// But here we assume the buffer is small enough to cause rare overflow at runtime (on FPGA).
-		if (balance >= F(N) && valid) begin
-			// I have to buffer since the balance is reaching the limit
+    
+    if (balance >= FN && valid) begin
+			// The packet needs to be buffered since the balance is reaching the limit.
+      // FN is a carefully calculated so that the buffer won't overflow.
 			buffer[buffer_cnt] <= data;
 			buffer_cnt <= buffer_cnt + 1;
 			buffer_cnt2 <= buffer_cnt + 1;
 			o_valid <= 0;
 		end
 		else if (~almfull && buffer_cnt != 0) begin
-			// flush the buffer when I do not have to enque new data
+			// When there's something in the buffer and the channel is available, the circuit always output the
+      // packets stored in the buffer first.
 			o_data <= buffer[buffer_cnt2 - buffer_cnt];
 			o_valid <= 1;
 			buffer_cnt <= buffer_cnt - 1;
 		end
 		else begin
-			// When valid is true (i.e., weird_inst has a valid output) and there's anything in the buffer, the
+      // When valid is true (i.e., weird_inst has a valid output) and there's something in the buffer, the
 			// output of weird_inst will be ignored.
-			// This is the root cause
+			// This block is the root cause of this bug.
 			o_data <= data;
 			o_valid <= valid;
 		end
 	end
-	// the following invariant should hold:
-	// count(o_valid@[cycleN] == 1) + buffer_cnt@[cycleN] == count(valid@[cycleN-1] == 1)
 endmodule
 ```

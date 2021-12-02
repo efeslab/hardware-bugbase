@@ -1,7 +1,12 @@
-### Source
+# D2 - Buffer Overflow - Grayscale
+
 BBB: https://github.com/efeslab/optimus-intel-fpga-bbb/tree/0633e15416a67f49740a8a7ff6af0f9a7b99e8b3
 
 grayscale: https://github.com/efeslab/hardcloud/tree/549015eaeba4d0d6de92248a2c2a7ddc42785457
+
+This bug is in the memory requestor in a grayscale accelerator. The accelerator reads data through the read channel, processes the data, and writes the results back through the write channel. If the write channel is full but the read channel is not full, a buffer overflow would occur in a while.
+
+When the bug occurs, one or more memory request packets would loss, which will mislead the packet counting logic and cause the accelerator to stall.
 
 ### Synthetic Code
 ```verilog

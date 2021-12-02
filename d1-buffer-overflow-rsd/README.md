@@ -1,6 +1,11 @@
-### Source
+# D1 - Buffer Overflow - RSD
+
 BBB: https://github.com/efeslab/optimus-intel-fpga-bbb/tree/0633e15416a67f49740a8a7ff6af0f9a7b99e8b3
 rsd: https://github.com/efeslab/hardcloud/tree/b40185e13f6d7d7a613218e26913d860c8384130/samples/reed_solomon_decoder
+
+This bug occurs in a write combining buffer of the memory requestor of the reed-solomon decoder, because the requestor does not handle a backpressure signal properly. If the output channel is "almost full" (i.e., with `o_almfull` being `1`) and the input channel keeps sending in traffic, the buffer would eventually overflow.
+
+When the bug occurs, one or more memory access packets would disappear; the disappeared packets would mislead the packet counting logic of the accelerator, causing the accelerator to stuck. The CPU-side software will also find a partially-incorrect result (missing some data in the middle) in the memory.
 
 ### Synthetic Bug
 ```verilog
