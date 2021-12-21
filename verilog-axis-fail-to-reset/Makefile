@@ -1,5 +1,5 @@
 include ../common/Makefile.env
-RTL_SOURCES?=sources.txt
+RTL_SOURCES?=instrument.txt
 TOP_MODULE?=test_axis_frame_len_8
 TEST_DIR?=test
 RTL_WORK_DIR?=work

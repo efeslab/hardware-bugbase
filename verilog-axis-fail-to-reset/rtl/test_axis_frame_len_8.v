@@ -95,12 +95,7 @@ always @(posedge clk) begin
         end
     end
 
-axis_frame_len #(
-    .DATA_WIDTH(DATA_WIDTH),
-    .KEEP_ENABLE(KEEP_ENABLE),
-    .KEEP_WIDTH(KEEP_WIDTH),
-    .LEN_WIDTH(LEN_WIDTH)
-)
+axis_frame_len 
 UUT (
     .clk(clk),
     .rst(rst),
