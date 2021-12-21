@@ -1,3 +1,0 @@
-+define+FORMAL
-withtask.v
-rtl/test_axis_frame_len_8.v

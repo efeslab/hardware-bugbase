@@ -1,4 +1,0 @@
-+define+FORMAL
-withtask.v
-rtl/test_axis_fifo.v
-

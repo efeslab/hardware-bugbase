@@ -1,6 +1,0 @@
-+define+FORMAL
-rtl/axis_frame_len.v
-
-
-
-
