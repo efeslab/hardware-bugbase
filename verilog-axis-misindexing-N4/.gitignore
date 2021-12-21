@@ -1,0 +1,5 @@
+work/
+*.fst.hier
+*.fst
+*.lxt
+test_axis_switch_4x4

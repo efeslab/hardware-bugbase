@@ -1,0 +1,5 @@
+work/
+*.fst.hier
+*.fst
+*.vcd
+axis_fifo_test
