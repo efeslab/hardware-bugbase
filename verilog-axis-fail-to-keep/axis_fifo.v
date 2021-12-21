@@ -34,7 +34,7 @@ module axis_fifo #
     // FIFO depth in words
     // KEEP_WIDTH words per cycle if KEEP_ENABLE set
     // Rounded up to nearest power of 2 cycles
-    parameter DEPTH = 4,
+    parameter DEPTH = 4096,
     // Width of AXI stream interfaces in bits
     parameter DATA_WIDTH = 8,
     // Propagate tkeep signal
@@ -45,11 +45,11 @@ module axis_fifo #
     // Propagate tlast signal
     parameter LAST_ENABLE = 1,
     // Propagate tid signal
-    parameter ID_ENABLE = 1,
+    parameter ID_ENABLE = 0,
     // tid signal width
     parameter ID_WIDTH = 8,
     // Propagate tdest signal
-    parameter DEST_ENABLE = 1,
+    parameter DEST_ENABLE = 0,
     // tdest signal width
     parameter DEST_WIDTH = 8,
     // Propagate tuser signal
@@ -59,7 +59,7 @@ module axis_fifo #
     // Frame FIFO mode - operate on frames instead of cycles
     // When set, m_axis_tvalid will not be deasserted within a frame
     // Requires LAST_ENABLE set
-    parameter FRAME_FIFO = 1,
+    parameter FRAME_FIFO = 0,
     // tuser value for bad frame marker
     parameter USER_BAD_FRAME_VALUE = 1'b1,
     // tuser mask for bad frame marker
@@ -70,7 +70,7 @@ module axis_fifo #
     // Drop incoming frames when full
     // When set, s_axis_tready is always asserted
     // Requires FRAME_FIFO set
-    parameter DROP_WHEN_FULL = 1
+    parameter DROP_WHEN_FULL = 0
 )
 (
     input  wire                   clk,

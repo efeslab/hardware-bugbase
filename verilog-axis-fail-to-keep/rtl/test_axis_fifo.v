@@ -149,7 +149,7 @@ always @(posedge clk) begin
             s_axis_tdata <= 5;
             s_axis_tkeep <= 0;
             s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 1;
+            s_axis_tlast <= 0;
             s_axis_tid <= 1;
             s_axis_tdest <= 0;
             s_axis_tuser <= 0;
@@ -167,9 +167,13 @@ always @(posedge clk) begin
         end
         else if(cycle == 7) begin
             m_axis_tready <= 1;
+            s_axis_tvalid <= 1'b0;
+            s_axis_tlast <= 0;
         end
         else if(cycle == 8) begin
             m_axis_tready <= 1;
+            s_axis_tvalid <= 1'b1;
+            s_axis_tlast <= 0;
         end
         else if(cycle == 9) begin
             s_axis_tlast <= 1'b1;
@@ -190,7 +194,8 @@ always @(*) begin
     end
 end
 
-axis_fifo #(
+axis_fifo 
+/*#(
     .DEPTH(DEPTH),
     .DATA_WIDTH(DATA_WIDTH),
     .KEEP_ENABLE(KEEP_ENABLE),
@@ -208,6 +213,7 @@ axis_fifo #(
     .DROP_BAD_FRAME(DROP_BAD_FRAME),
     .DROP_WHEN_FULL(DROP_WHEN_FULL)
 )
+*/
 UUT (
     .clk(clk),
     .rst(rst),
