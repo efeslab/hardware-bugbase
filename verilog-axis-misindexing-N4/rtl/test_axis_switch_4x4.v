@@ -81,9 +81,6 @@ initial begin
     $display("@@@Error: Misindexing occurs at line 228 and 296!");
 
 
-    // dump file
-    $dumpfile("test_axis_switch_4x4.lxt");
-    $dumpvars(0, test_axis_switch_4x4);
 end
 
 always @(posedge clk) begin
