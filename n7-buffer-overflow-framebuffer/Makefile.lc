@@ -1,0 +1,86 @@
+include ../common/Makefile.env
+RTL_SOURCES?=sources.txt
+LC_RTL_SOURCES_0=sources.losscheck.0.txt
+LC_RTL_SOURCES_1=sources.losscheck.1.txt
+LC_RTL_SOURCES_OPAE_0=sources.losscheck-opae.0.txt
+LC_RTL_SOURCES_OPAE_1=sources.losscheck-opae.1.txt
+TOP_MODULE?=ccip_std_afu_wrapper
+LC_RTL_WORK_DIR?=work_losscheck_1
+TEST_DIR?=test
+LC_GEN_FILE_0=rsd.losscheck.0.v
+LC_GEN_FILE_1=rsd.losscheck.1.v
+
+VERILATOR=../../veripass/verilator/bin/verilator
+VERILATOR_OPT?=
+VERILATOR_OPT+= -cc -timescale-override 10ps/10ps
+VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
+				-Wno-CASEX -Wno-TIMESCALEMOD -Wno-BLKLOOPINIT -Wno-PINMISSING -Wno-ALWCOMBORDER -Wno-VLTAG
+VERILATOR_OPT+= -trace-fst -trace-structs -comp-limit-syms 0
+VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
+VERILATOR_ROOT=$(CURDIR)/../../veripass/verilator
+
+CXX?= g++
+CXX_OPT?=
+CXX_OPT+= -g
+CXX_OPT+= -I$(VERILATOR_ROOT)/include -I$(LC_RTL_WORK_DIR)
+CXX_OPT+= -lz
+VERILATOR_CXX_FILES?= $(VERILATOR_ROOT)/include/verilated.cpp
+VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_vcd_c.cpp
+VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_fst_c.cpp
+TEST_CXX_FILES?=$(shell find $(TEST_DIR) -name '*.cpp')
+TEST_RTL_SIMLIB?=$(LC_RTL_WORK_DIR)/V$(TOP_MODULE)__ALL.a
+TEST_BIN?= reed_solomon_decoder_test_losscheck
+
+all: clean verilator sw
+
+losscheck0:
+	$(VERIPASS_PATH)/losscheck.py --top $(TOP_MODULE) -F $(RTL_SOURCES) -o $(LC_GEN_FILE_0) --source c0Rx_data --sink c1Tx_data --source-valid c0Rx_rspValid --reset pck_cp2af_softReset --ignore-stop
+	@echo -e "$(LC_GEN_FILE_0)\n../common/altera/altera_mf.v\n../common/altera/220model.v" > $(LC_RTL_SOURCES_0)
+	@echo -e "$(VERIPASS_PATH)/model/dcfifo_simple_model.v\n$(VERIPASS_PATH)/model/scfifo_simple_model.v" >> $(LC_RTL_SOURCES_0)
+	@echo -e "$(LC_GEN_FILE_0)\n../common/ccip_dewrapper.sv\n../common/cci_afu.json\n" > $(LC_RTL_SOURCES_OPAE_0)
+	@echo -e "$(VERIPASS_PATH)/model/dcfifo_simple_model.v\n$(VERIPASS_PATH)/model/scfifo_simple_model.v" >> $(LC_RTL_SOURCES_OPAE_0)
+
+losscheck1: origin_sim
+	$(VERIPASS_PATH)/losscheck.py --top $(TOP_MODULE) -F $(RTL_SOURCES) -o $(LC_GEN_FILE_1) --source c0Rx_data --sink c1Tx_data --source-valid c0Rx_rspValid --reset pck_cp2af_softReset --ignore-stop --filtered-list filter.txt
+	@echo -e "$(LC_GEN_FILE_1)\n../common/altera/altera_mf.v\n../common/altera/220model.v" > $(LC_RTL_SOURCES_1)
+	@echo -e "$(VERIPASS_PATH)/model/dcfifo_simple_model.v\n$(VERIPASS_PATH)/model/scfifo_simple_model.v" >> $(LC_RTL_SOURCES_1)
+	@echo -e "$(LC_GEN_FILE_1)\n../common/ccip_dewrapper.sv\n../common/cci_afu.json\n" > $(LC_RTL_SOURCES_OPAE_1)
+	@echo -e "$(VERIPASS_PATH)/model/dcfifo_simple_model.v\n$(VERIPASS_PATH)/model/scfifo_simple_model.v" >> $(LC_RTL_SOURCES_OPAE_1)
+
+origin_sim: losscheck0
+	rm -rf build_sim_origin
+	vai_sim_setup -s $(LC_RTL_SOURCES_OPAE_0) build_sim_origin
+	cd build_sim_origin; make; make sim | tee log.txt &
+	sleep 1; cd origin_test; make; export ASE_WORKDIR=$(CURDIR)/build_sim_origin/work; timeout 3 ./reed_solomon_decoder 10; echo -e "Simulation Done\n\n";
+	cat build_sim_origin/log.txt | grep "\%loss" | awk '{print $$3 "\t" $$4 "\t" $$5}' | sort | uniq -c | awk '{print $$2 "\t" $$3 "\t" $$4}' | tee filter.txt
+
+verilator: losscheck1
+	$(VERILATOR) $(VERILATOR_OPT) -F $(LC_RTL_SOURCES_1) -top-module $(TOP_MODULE) --Mdir $(LC_RTL_WORK_DIR)
+	$(MAKE) -C $(LC_RTL_WORK_DIR) -f V$(TOP_MODULE).mk
+
+sw: verilator
+	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) $(CXX_OPT) -o $(TEST_BIN)
+
+clean:
+	rm -rf $(LC_RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst withtask.v notask.v $(LC_RTL_WORK_DIR) $(LC_RTL_SOURCES_0) $(LC_RTL_SOURCES_1) $(LC_RTL_SOURCES_OPAE_0) $(LC_RTL_SOURCES_OPAE_1) filter.txt build_sim_origin
+	rm -rf $(LC_GEN_FILE_0) $(LC_GEN_FILE_1) *.displayinfo.txt *.widthinfo.txt withlosscheck.v
+	cd origin_test; $(MAKE) clean
+
+sim:
+	@echo "BUG 1: Buffer Overflow"
+	./$(TEST_BIN)
+
+wave:
+	gtkwave *.fst >/dev/null 2>/dev/null &
+
+$(LC_GEN_FILE_1): losscheck1
+
+SV2V_OUT_FILES+=withlosscheck
+withlosscheck.v: $(LC_GEN_FILE_1)
+	cp $(LC_GEN_FILE_1) withlosscheck.v
+	echo -e "\n" >> withlosscheck.v
+	cat $(VERIPASS_PATH)/model/dcfifo_simple_model.v >> withlosscheck.v
+	echo -e "\n" >> withlosscheck.v
+	cat $(VERIPASS_PATH)/model/scfifo_simple_model.v >> withlosscheck.v
+
+include ../common/Makefile.STP.rules
