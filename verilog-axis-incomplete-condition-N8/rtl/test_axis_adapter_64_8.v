@@ -128,12 +128,13 @@ always @(*) begin
 end
 
 
-axis_adapter #(
+axis_adapter 
+/* #(
     .INPUT_DATA_WIDTH(INPUT_DATA_WIDTH),
     .INPUT_KEEP_WIDTH(INPUT_KEEP_WIDTH),
     .OUTPUT_DATA_WIDTH(OUTPUT_DATA_WIDTH),
     .OUTPUT_KEEP_WIDTH(OUTPUT_KEEP_WIDTH)
-)
+)*/
 UUT (
     .clk(clk),
     .rst(rst),

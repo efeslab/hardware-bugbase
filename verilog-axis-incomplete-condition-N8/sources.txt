@@ -1,6 +1,6 @@
 +define+FORMAL
 rtl/axis_adapter.v
-rtl/test_axis_adapter_64_8.v
+
 
 
 
