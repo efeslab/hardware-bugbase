@@ -34,7 +34,7 @@ module axis_switch #
     // Number of AXI stream inputs
     parameter S_COUNT = 4,
     // Number of AXI stream outputs
-    parameter M_COUNT = 4,
+    parameter M_COUNT = 1,
     // Width of AXI stream interfaces in bits
     parameter DATA_WIDTH = 8,
     // Propagate tkeep signal
@@ -42,12 +42,12 @@ module axis_switch #
     // tkeep signal width (words per cycle)
     parameter KEEP_WIDTH = (DATA_WIDTH/8),
     // Propagate tid signal
-    parameter ID_ENABLE = 0,
+    parameter ID_ENABLE = 1,
     // tid signal width
     parameter ID_WIDTH = 8,
     // tdest signal width
     // must be wide enough to uniquely address outputs
-    parameter DEST_WIDTH = $clog2(M_COUNT),
+    parameter DEST_WIDTH = $clog2(M_COUNT+1),
     // Propagate tuser signal
     parameter USER_ENABLE = 1,
     // tuser signal width
@@ -61,7 +61,7 @@ module axis_switch #
     // Concatenate M_COUNT DEST_WIDTH sized constants
     // Port selected if M_BASE <= tdest <= M_TOP
     // set to zero to inherit from M_BASE
-    parameter M_TOP = 0,
+    parameter M_TOP = {3'd3, 3'd2, 3'd1, 3'd0},
     // Interface connection control
     // M_COUNT concatenated fields of S_COUNT bits
     parameter M_CONNECT = {M_COUNT{{S_COUNT{1'b1}}}},
