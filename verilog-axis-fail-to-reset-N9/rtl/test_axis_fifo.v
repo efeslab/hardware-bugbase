@@ -47,7 +47,7 @@ parameter FRAME_FIFO = 1;
 parameter USER_BAD_FRAME_VALUE = 1'b1;
 parameter USER_BAD_FRAME_MASK = 1'b1;
 parameter DROP_BAD_FRAME = 0;
-parameter DROP_WHEN_FULL = 0;
+parameter DROP_WHEN_FULL = 1;
 
 // Inputs
 reg [31:0] cycle = 0;
@@ -154,11 +154,14 @@ always @(*) begin
 end
 
 
-axis_frame_fifo #(
+axis_frame_fifo 
+/*
+#(
     .ADDR_WIDTH(2),
     .DATA_WIDTH(DATA_WIDTH),
     .DROP_WHEN_FULL(DROP_WHEN_FULL)
 )
+*/
 UUT (
     .clk(clk),
     .rst(rst),

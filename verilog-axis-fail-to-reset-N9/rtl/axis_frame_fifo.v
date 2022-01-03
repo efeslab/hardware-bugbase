@@ -31,9 +31,9 @@ THE SOFTWARE.
  */
 module axis_frame_fifo #
 (
-    parameter ADDR_WIDTH = 12,
+    parameter ADDR_WIDTH = 2,
     parameter DATA_WIDTH = 8,
-    parameter DROP_WHEN_FULL = 0
+    parameter DROP_WHEN_FULL = 1
 )
 (
     input  wire                   clk,
