@@ -1,0 +1,6 @@
+work/
+*.fst.hier
+*.fst
+*.vcd
+*.lxt
+test_axis_async_fifo
