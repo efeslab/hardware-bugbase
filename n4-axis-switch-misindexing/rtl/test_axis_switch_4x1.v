@@ -29,7 +29,7 @@ THE SOFTWARE.
 /*
  * Testbench for axis_switch
  */
-module test_axis_switch_4x4(input clk, output reg genclock);
+module test_axis_switch_4x1(input clk, output reg genclock);
 
 // Parameters
 parameter S_COUNT = 4;
@@ -78,19 +78,74 @@ wire [M_COUNT*USER_WIDTH-1:0] m_axis_tuser;
 
 initial begin
     // myhdl integration
-    $display("@@@Error: Misindexing occurs at line 228 and 296!");
-
+    $display("@@@Bug: Misindexing occurs at line 228 and 296!");
+    rst = 1;
 
 end
 
 always @(posedge clk) begin
-        genclock <= cycle < 6;
+        genclock <= cycle < 12;
         cycle <= cycle + 1;
 
-        if(cycle == 5) begin
+        if(cycle == 0) begin
+            rst <= 0;
+            s_axis_tdata <= 32'habcd1234;
+            s_axis_tkeep <= 4'b1111;
+            s_axis_tvalid <= 4'b1111;
+            s_axis_tlast <= 0;
+            s_axis_tid <= 32'h01020304;
+            s_axis_tdest <= 4'b1101;
+            s_axis_tuser <= 0;
+            m_axis_tready <= 1'b1;
+        end
+        else if (cycle == 1) begin
+            s_axis_tvalid <= 4'b1111;
+            s_axis_tlast <= 4'b1000;
+        end
+        else if (cycle == 2) begin
+            s_axis_tvalid <= 4'b0111;
+            s_axis_tlast <= 4'b0100;
+        end
+        else if (cycle == 3) begin
+            s_axis_tvalid <= 4'b0011;
+            s_axis_tlast <= 4'b0010;
+        end
+        else if (cycle == 4) begin
+            s_axis_tdata <= 32'habcd1234;
+            s_axis_tkeep <= 4'b1111;
+            s_axis_tvalid <= 4'b0001;
+            s_axis_tlast <= 4'b0001;
+            s_axis_tid <= 32'h01020304;
+            s_axis_tdest <= 0;
+            s_axis_tuser <= 0;
+            m_axis_tready <= 1'b1;
+        end
+        else if (cycle == 5) begin
+            s_axis_tvalid <= 4'b0000;
+        end
+        else if (cycle == 6) begin
+            
+        end
+        else if (cycle == 7) begin
+            
+        end
+        else if (cycle == 8) begin
+            
+        end
+        else if (cycle == 12) begin
             $finish;
         end
     end
+
+always @(*) begin
+    if(cycle == 5) begin
+        if (!m_axis_tvalid && m_axis_tlast) begin  //output data should be 0xcd 0xab 0xcd 0xab 0xcd, with tlast==1 at the last 0xcd
+            $display("@@@Error: The data from input is not outputed!");
+        end
+        $finish;
+    end
+end
+
 
 axis_switch #(
     .M_COUNT(M_COUNT),

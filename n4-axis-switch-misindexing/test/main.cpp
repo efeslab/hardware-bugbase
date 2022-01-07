@@ -11,7 +11,7 @@
 #include <csetjmp>
 #include <csignal>
 
-#include "Vtest_axis_switch_4x4.h"
+#include "Vtest_axis_switch_4x1.h"
 
 using namespace std;
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     
 
     Verilated::commandArgs(argc, argv);
-    Vtest_axis_switch_4x4 *tb = new Vtest_axis_switch_4x4;
+    Vtest_axis_switch_4x1 *tb = new Vtest_axis_switch_4x1;
     
     Verilated::traceEverOn(true);
     VerilatedFstC *trace = new VerilatedFstC;

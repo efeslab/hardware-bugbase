@@ -29,7 +29,7 @@ THE SOFTWARE.
 /*
  * Testbench for axis_switch
  */
-module axis_switch_4x4
+module axis_switch_4x1
 (
     input  wire                   clk,
     input  wire                   rst,

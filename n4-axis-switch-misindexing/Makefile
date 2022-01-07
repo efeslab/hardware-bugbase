@@ -1,6 +1,6 @@
 include ../common/Makefile.env
 SIM_SOURCES?=sources.txt
-SIM_TOP_MODULE?=test_axis_switch_4x4
+SIM_TOP_MODULE?=test_axis_switch_4x1
 TEST_DIR?=test
 RTL_WORK_DIR?=work
 
@@ -22,7 +22,7 @@ VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_vcd_c.cpp
 VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_fst_c.cpp
 TEST_CXX_FILES?=$(shell find $(TEST_DIR) -name '*.cpp')
 TEST_RTL_SIMLIB?=$(RTL_WORK_DIR)/V$(SIM_TOP_MODULE)__ALL.a
-TEST_BIN?= test_axis_switch_4x4
+TEST_BIN?= test_axis_switch_4x1
 
 all: clean verilator sw
 
@@ -44,8 +44,8 @@ wave:
 	gtkwave *.fst >/dev/null 2>/dev/null &
 
 # for resource-util synthesize
-TOP_MODULE=axis_switch_4x4
-TOP_MODULE_SYNTH=axis_switch_4x4
+TOP_MODULE=axis_switch_4x1
+TOP_MODULE_SYNTH=axis_switch_4x1
 RTL_SOURCES=sources-veripass.txt
 TCLGEN_SRCS=
 SV2V_OUT_FILES+=withtask
