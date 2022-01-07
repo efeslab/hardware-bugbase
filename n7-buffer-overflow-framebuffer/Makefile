@@ -1,6 +1,6 @@
 include ../common/Makefile.env
-#SIM_SOURCES?=sources-sim.txt
-SIM_SOURCES?=sources.txt
+SIM_SOURCES?=sources-sim.txt
+#SIM_SOURCES?=sources.txt
 RTL_SOURCES?=sources-veripass.txt
 SIM_TOP_MODULE?=axis_fifo_wrapper
 RTL_WORK_DIR?=work
@@ -47,16 +47,16 @@ wave:
 	gtkwave *.fst > /dev/null 2>/dev/null &
 
 # for resource-util synthesize
-TOP_MODULE=fadd_buggy
-TOP_MODULE_SYNTH=fadd_wrapper
-TCLGEN_SRCS=vivado_synth/fadd_wrapper.v
+TOP_MODULE=axis_fifo_wrapper
+TOP_MODULE_SYNTH=axis_fifo_wrapper
+TCLGEN_SRCS=
 SV2V_OUT_FILES+=withtask
-CODE_GEN+=withtask.v bug11.v
+CODE_GEN+=withtask.v bug.v
 
-withtask.v: ${RTL_SOURCES} bug11.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug11.instrument.cfg --reset "rst"
+withtask.v: ${RTL_SOURCES} n7.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config n7.instrument.cfg --reset "rst"
 
-DEPTH_SWEEP_PREFIX+=depth_sweep_bug11
-depth_sweep_bug11_d%.v: ${RTL_SOURCES} bug11.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config bug11.instrument.cfg --reset "rst" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
+DEPTH_SWEEP_PREFIX+=depth_sweep_n7
+depth_sweep_n7_d%.v: ${RTL_SOURCES} n7.instrument.cfg
+	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config n7.instrument.cfg --reset "rst" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
 include ../common/Makefile.ILA.rules

@@ -3,3 +3,4 @@ work/
 *.fst
 *.vcd
 fadd_test
+bug.v

@@ -258,6 +258,7 @@ always @(posedge clk) begin
 
     if (write) begin
         mem[wr_addr_reg[ADDR_WIDTH-1:0]] <= s_axis;
+        $display("%x", wr_addr_reg) /*verilator tag debug_display_11*/;
     end
 end
 
