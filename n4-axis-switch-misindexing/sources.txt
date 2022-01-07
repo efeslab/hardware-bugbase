@@ -1,0 +1,11 @@
++define+FORMAL
+rtl/axis_switch.v
+rtl/axis_register.v
+rtl/arbiter.v
+rtl/priority_encoder.v
+rtl/test_axis_switch_4x1.v
+
+
+
+
+
