@@ -1,0 +1,65 @@
+include ../common/Makefile.env
+SIM_SOURCES?=sources.txt
+RTL_SOURCES?=sources-veripass.txt
+SIM_TOP_MODULE?=axis_fifo_wrapper
+RTL_WORK_DIR?=work
+TEST_DIR?=test
+
+VERILATOR=../../veripass/verilator/bin/verilator
+VERILATOR_OPT?=
+VERILATOR_OPT+= -cc
+VERILATOR_OPT+= -Wno-WIDTH -Wno-LITENDIAN -Wno-UNPACKED -Wno-BLKANDNBLK -Wno-CASEINCOMPLETE \
+				-Wno-CASEX -Wno-TIMESCALEMOD -Wno-UNSIGNED -Wno-PINMISSING -Wno-SELRANGE
+VERILATOR_OPT+= -trace-fst -trace-structs
+VERILATOR_OPT+= -assert -trace-max-array 65536 -trace-max-width 65536
+VERILATOR_ROOT=$(CURDIR)/../../veripass/verilator
+
+CXX?= g++
+CXX_OPT?=
+CXX_OPT+= -g
+CXX_OPT+= -I$(VERILATOR_ROOT)/include -I$(RTL_WORK_DIR)
+CXX_OPT+= -lz
+VERILATOR_CXX_FILES?= $(VERILATOR_ROOT)/include/verilated.cpp
+VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_vcd_c.cpp
+VERILATOR_CXX_FILES+= $(VERILATOR_ROOT)/include/verilated_fst_c.cpp
+TEST_CXX_FILES?=$(shell find $(TEST_DIR) -name '*.cpp')
+TEST_RTL_SIMLIB?=$(RTL_WORK_DIR)/V$(SIM_TOP_MODULE)__ALL.a
+TEST_BIN?= axis_fifo_test
+
+all: clean verilator sw
+
+losscheck:
+	../../veripass/losscheck.py --top axis_fifo_wrapper -F sources-veripass.txt -o test.v --source s_axis_tdata --sink m_axis_tdata --source-valid s_axis_tvalid --reset rst --tasksupport-mode=ILA --ignore-stop
+
+verilator: losscheck
+	$(VERILATOR) $(VERILATOR_OPT) -F $(SIM_SOURCES) -top-module $(SIM_TOP_MODULE) --Mdir $(RTL_WORK_DIR)
+	$(MAKE) -C $(RTL_WORK_DIR) -f V$(SIM_TOP_MODULE).mk
+
+sw: verilator
+	$(CXX) $(CXX_OPT) $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $(TEST_RTL_SIMLIB) $(CXX_OPT) -o $(TEST_BIN)
+
+clean:
+	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
+	rm -rf test.v withlosscheck.v
+
+sim:
+	@echo "BUG 1: Bit Splitting Bug"
+	./$(TEST_BIN)
+
+wave:
+	gtkwave *.fst > /dev/null 2>/dev/null &
+
+# for resource-util synthesize
+TOP_MODULE=axis_fifo_wrapper
+TOP_MODULE_SYNTH=axis_fifo_wrapper
+TCLGEN_SRCS=
+SV2V_OUT_FILES+=withlosscheck
+CODE_GEN+=withlosscheck.v bug.v
+
+test.v: losscheck
+
+withlosscheck.v: test.v
+	cp test.v withlosscheck.v
+	cp ila.tcl withlosscheck.ila.tcl
+
+include ../common/Makefile.ILA.rules
