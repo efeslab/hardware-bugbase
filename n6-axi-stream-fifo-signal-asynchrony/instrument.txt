@@ -1,7 +1,7 @@
 +define+FORMAL
 rtl/test_axis_async_fifo.v
 test.v
-
+../common/xilinx/fakeila.sv
 
 
 

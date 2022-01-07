@@ -1,6 +1,5 @@
 include ../common/Makefile.env
-SIM_SOURCES?=sources.txt
-#SIM_SOURCES?=instrument.txt
+SIM_SOURCES?=instrument.txt
 SIM_TOP_MODULE?=test_axis_async_fifo
 TEST_DIR?=test
 RTL_WORK_DIR?=work
@@ -27,7 +26,10 @@ TEST_BIN?= test_axis_async_fifo
 
 all: clean verilator sw
 
-verilator:
+losscheck:
+	../../veripass/losscheck.py --top axis_fifo_wrapper -F sources-veripass.txt -o test.v --source input_axis_tdata --sink output_axis_tdata --source-valid input_axis_tvalid --reset async_rst --tasksupport-mode=ILA
+
+verilator: losscheck
 	$(VERILATOR) $(VERILATOR_OPT) -F $(SIM_SOURCES) -top-module $(SIM_TOP_MODULE) --Mdir $(RTL_WORK_DIR)
 	$(MAKE) -C $(RTL_WORK_DIR) -f V$(SIM_TOP_MODULE).mk
 
@@ -36,7 +38,7 @@ sw: verilator
 
 clean:
 	rm -rf $(RTL_WORK_DIR) $(TEST_BIN) *.vcd *.fst
-	rm -rf build_* *info.txt
+	rm -rf build_withlosscheck
 
 sim:
 	./$(TEST_BIN)
@@ -49,13 +51,13 @@ TOP_MODULE=axis_fifo_wrapper
 TOP_MODULE_SYNTH=axis_fifo_wrapper
 RTL_SOURCES=sources-veripass.txt
 TCLGEN_SRCS=
-SV2V_OUT_FILES+=withtask
-CODE_GEN+=withtask.v bug_step2.v
+SV2V_OUT_FILES+=withlosscheck
+CODE_GEN+=withlosscheck.v bug_step2.v
 
-withtask.v: ${RTL_SOURCES} n6.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config n6.instrument.cfg --reset "async_rst"
+test.v: losscheck
 
-DEPTH_SWEEP_PREFIX+=depth_sweep_n6
-depth_sweep_n6_d%.v: ${RTL_SOURCES} n6.instrument.cfg
-	${TOOLS} --top ${TOP_MODULE} -F ${RTL_SOURCES} --config n6.instrument.cfg --reset "async_rst" --config-override="{\"LOG2_SAMPLE_DEPTH\":$*, \"SV2V_OUTPUT\":\"$@\", \"ILA_OUTPUT\":\"$(basename $@).ila.tcl\"}"
+withlosscheck.v: test.v
+	cp test.v withlosscheck.v
+	mv ila.tcl withlosscheck.ila.tcl
+
 include ../common/Makefile.ILA.rules
