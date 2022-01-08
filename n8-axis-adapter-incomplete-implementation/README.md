@@ -1,7 +1,6 @@
-### Source
-Verilog-axis(Verilog AXI Stream Components): https://github.com/alexforencich/verilog-axis/commit/9cca78bc7c082b1bff9dd4168fac4841dd47b03b
+# S3 - Incomplete Implementation - AXI-Stream Adapter
 
-Bug type: Incomplete Conditions
+**Source:** Verilog-axis(Verilog AXI Stream Components): https://github.com/alexforencich/verilog-axis/commit/9cca78bc7c082b1bff9dd4168fac4841dd47b03b
 
 
 TKEEP is the byte qualifier that indicates whether the content
