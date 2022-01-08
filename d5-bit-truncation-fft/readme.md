@@ -1,4 +1,4 @@
-# D5 - Bit Truncation - FFT
+# D6 - Bit Truncation - FFT
 
 Source: https://github.com/ZipCPU/dblclockfft/issues/5
 
