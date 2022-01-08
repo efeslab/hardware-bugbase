@@ -1,4 +1,4 @@
-# D6 - Misindexing - FADD
+# D7 - Misindexing - FADD
 
 A PhD student at University of Michigan reports this bug in one of his hardware project.
 

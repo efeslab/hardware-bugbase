@@ -1,4 +1,4 @@
-# D7 - Endianness Mismatch - SDSPI
+# D9 - Endianness Mismatch - SDSPI
 
 Code: https://github.com/ZipCPU/sdspi/commit/53e9a2bf66b8185e3f856a21f1d7c2d672f0da2b
 

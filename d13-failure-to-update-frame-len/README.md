@@ -1,7 +1,8 @@
-### Source
-Verilog-axis(Verilog AXI Stream Components): https://github.com/alexforencich/verilog-axis/commit/0b2066abe3d8983a120cb8afe598c2710f2e5be6
+# D13 - Failure-to-Update - Frame Length Measurer
 
-Bug type: Fail to reset (signal frame_len_reg)
+**Source:** Verilog-axis(Verilog AXI Stream Components): https://github.com/alexforencich/verilog-axis/commit/0b2066abe3d8983a120cb8afe598c2710f2e5be6
+
+This bug is caused by failing to reset the signal `frame_len_reg` in back-to-back data transfer (e.g., with `tlast` set on every transfer).
 
 ### Synthetic Code
 ```verilog
