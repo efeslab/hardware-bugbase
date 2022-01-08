@@ -1,6 +1,6 @@
 # D4 - Buffer Overflow - Frame Buffer
 
-Source: https://github.com/alexforencich/verilog-axis/commit/3d90e80da8e60daf5727e003d3b059e9b21b41da
+**Source:** https://github.com/alexforencich/verilog-axis/commit/3d90e80da8e60daf5727e003d3b059e9b21b41da
 
 This bug is found in an AXI buffer implementation in an AXI component library. It can be only triggered when configuring the buffer as a frame buffer (i.e., with `FRAME_FIFO=1`) and disabling frame drop (i.e., with `DROP_WHEN_FULL=0`).
 
