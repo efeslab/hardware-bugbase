@@ -1,4 +1,4 @@
-# D4 - Bit Truncation - SHA512
+# D5 - Bit Truncation - SHA512
 
 Code: https://github.com/efeslab/hardcloud/tree/e28ca96fdbb67904ef909fb04e026cf6dc724198/samples/sha512
 
