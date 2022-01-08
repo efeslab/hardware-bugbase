@@ -1,7 +1,8 @@
-### Source
-Verilog-axis(Verilog AXI Stream Components): https://github.com/alexforencich/verilog-axis/commit/0b2066abe3d8983a120cb8afe598c2710f2e5be6
+# D11 - Failure-to-Update - Frame FIFO
 
-Bug type: Fail to reset (signal drop_frame and wr_ptr_cur)
+**Source:** Verilog-axis(Verilog AXI Stream Components): https://github.com/alexforencich/verilog-axis/commit/0b2066abe3d8983a120cb8afe598c2710f2e5be6
+
+The bug is caused by failing to reset signal drop_frame and wr_ptr_cur. After a reset, these variables will keep the old value, thus causing erreneous behavior.
 
 ### Synthetic Code
 ```verilog
