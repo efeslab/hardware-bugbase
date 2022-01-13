@@ -1,4 +1,4 @@
-# D4 - Buffer Overflow - Frame Buffer
+# D4 - Buffer Overflow - Frame FIFO
 
 **Source:** https://github.com/alexforencich/verilog-axis/commit/3d90e80da8e60daf5727e003d3b059e9b21b41da
 
