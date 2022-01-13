@@ -1,6 +1,6 @@
 include ../common/Makefile.env
 RTL_SOURCES?=sources0 sources1
-TOP_MODULE?=testbench
+SIM_TOP_MODULE?=testbench
 TEST_DIR?=test
 
 VERILATOR=../../veripass/verilator/bin/verilator
@@ -24,9 +24,9 @@ TEST_CXX_FILES?=$(shell find $(TEST_DIR) -name '*.cpp')
 all: $(RTL_SOURCES)
 
 $(RTL_SOURCES):
-	$(VERILATOR) $(VERILATOR_OPT) -F $@.txt -top-module $(TOP_MODULE) --Mdir $@_work
-	$(MAKE) -C $@_work -f V$(TOP_MODULE).mk
-	$(CXX) $(CXX_OPT) -I$@_work $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $@_work/V$(TOP_MODULE)__ALL.a $(CXX_OPT) -o $@_test
+	$(VERILATOR) $(VERILATOR_OPT) -F $@.txt -top-module $(SIM_TOP_MODULE) --Mdir $@_work
+	$(MAKE) -C $@_work -f V$(SIM_TOP_MODULE).mk
+	$(CXX) $(CXX_OPT) -I$@_work $(VERILATOR_CXX_FILES) $(TEST_CXX_FILES) $@_work/V$(SIM_TOP_MODULE)__ALL.a $(CXX_OPT) -o $@_test
 
 clean:
 	rm -rf *_work *_test *.vcd *.fst
@@ -45,6 +45,7 @@ wave:
 RTL_SOURCES=sources.txt
 VERIPASS_TOP_MODULE=xlnxdemo
 TOP_MODULE_SYNTH=xlnxdemo_wrapper
+TOP_MODULE=xlnxdemo
 TCLGEN_SRCS=vivado_synth/xlnxdemo_wrapper.v
 SV2V_OUT_FILES+=withtask
 CODE_GEN+=withtask.v bug6.v
