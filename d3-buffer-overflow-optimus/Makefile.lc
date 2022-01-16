@@ -72,15 +72,18 @@ sim:
 wave:
 	gtkwave optimus_overflow.fst > /dev/null 2>/dev/null &
 
-
 $(LC_GEN_FILE_1): losscheck1
 
 SV2V_OUT_FILES+=withlosscheck
 withlosscheck.v: $(LC_GEN_FILE_1)
 	cp $(LC_GEN_FILE_1) withlosscheck.v
+	sed -i 's/module ccip_std_afu_wrapper/module ccip_std_afu_wrapper_slow/' withlosscheck.v
 	echo -e "\n" >> withlosscheck.v
 	cat $(VERIPASS_PATH)/model/dcfifo_simple_model.v >> withlosscheck.v
 	echo -e "\n" >> withlosscheck.v
 	cat $(VERIPASS_PATH)/model/scfifo_simple_model.v >> withlosscheck.v
+	echo -e "\n" >> withlosscheck.v
+	cat ../common/ccip_dewrapper_async.sv >> withlosscheck.v
+	echo -e "\n" >> withlosscheck.v
 
 include ../common/Makefile.STP.rules
