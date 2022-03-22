@@ -176,7 +176,7 @@ assign status_good_frame = good_frame_reg;
 
 always @(posedge clk) begin
     if (!rst) begin
-        if (wr_ptr_cur_next[ADDR_WIDTH-1:0] == wr_ptr_cur_reg[ADDR_WIDTH-1:0] + 1 && wr_ptr_cur_next[ADDR_WIDTH-1:0] == rd_ptr_next[ADDR_WIDTH-1:0])
+        if ((s_axis_tvalid && s_axis_tready) && !(m_axis_tvalid && m_axis_tready) && wr_ptr_cur_reg[ADDR_WIDTH] != rd_ptr_reg[ADDR_WIDTH] && wr_ptr_cur_reg[ADDR_WIDTH-1:0] == rd_ptr_reg[ADDR_WIDTH-1:0])
             $error("buffer overflow");
     end
 end
