@@ -90,102 +90,102 @@ end
 
 
 always @(posedge clk) begin
-        genclock <= cycle < 12;
-        cycle <= cycle + 1;
+    genclock <= cycle < 12;
+    cycle <= cycle + 1;
 
-        if(cycle == 0) begin
-            rst <= 1'b0;
-            s_axis_tdata <= 1;
-            s_axis_tkeep <= 0;
-            s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 1;
-            s_axis_tid <= 1;
-            s_axis_tdest <= 0;
-            s_axis_tuser <= 0;
-            m_axis_tready <= 0;
-            
-        end
-        else if (cycle == 1) begin
-           s_axis_tdata <= 1;
-            s_axis_tkeep <= 0;
-            s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 1;
-            s_axis_tid <= 1;
-            s_axis_tdest <= 0;
-            s_axis_tuser <= 0;
-            m_axis_tready <= 0;
-        end
-        else if(cycle == 2) begin
-            s_axis_tdata <= 2;
-            s_axis_tkeep <= 0;
-            s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 1;
-            s_axis_tid <= 1;
-            s_axis_tdest <= 0;
-            s_axis_tuser <= 0;
-            m_axis_tready <= 0;
-        end
-        else if(cycle == 3) begin
-            s_axis_tdata <= 3;
-            s_axis_tkeep <= 0;
-            s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 1;
-            s_axis_tid <= 1;
-            s_axis_tdest <= 0;
-            s_axis_tuser <= 0;
-            m_axis_tready <= 0;
-        end
-        else if(cycle == 4) begin
-            s_axis_tdata <= 4;
-            s_axis_tkeep <= 0;
-            s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 0;
-            s_axis_tid <= 1;
-            s_axis_tdest <= 0;
-            s_axis_tuser <= 0;
-            m_axis_tready <= 0;
-        end
-        else if (cycle == 5) begin
-            s_axis_tdata <= 5;
-            s_axis_tkeep <= 0;
-            s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 0;
-            s_axis_tid <= 1;
-            s_axis_tdest <= 0;
-            s_axis_tuser <= 0;
-            m_axis_tready <= 0;
-        end
-        else if (cycle == 6) begin
-            s_axis_tdata <= 6;
-            s_axis_tkeep <= 0;
-            s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 0;
-            s_axis_tid <= 1;
-            s_axis_tdest <= 0;
-            s_axis_tuser <= 0;
-            m_axis_tready <= 0;
-        end
-        else if(cycle == 7) begin
-            m_axis_tready <= 1;
-            s_axis_tvalid <= 1'b0;
-            s_axis_tlast <= 0;
-        end
-        else if(cycle == 8) begin
-            m_axis_tready <= 1;
-            s_axis_tvalid <= 1'b1;
-            s_axis_tlast <= 0;
-        end
-        else if(cycle == 9) begin
-            s_axis_tlast <= 1'b1;
-        end
-        else if (cycle == 10) begin
-            s_axis_tlast <= 1'b0;
-            s_axis_tdata <= 7;
-        end
-        else if (cycle == 14) begin
-            $finish;
-        end
+    if(cycle == 0) begin
+        rst <= 1'b0;
+        s_axis_tdata <= 1;
+        s_axis_tkeep <= 0;
+        s_axis_tvalid <= 1'b1;
+        s_axis_tlast <= 1;
+        s_axis_tid <= 1;
+        s_axis_tdest <= 0;
+        s_axis_tuser <= 0;
+        m_axis_tready <= 0;
+        
     end
+    else if (cycle == 1) begin
+       s_axis_tdata <= 1;
+        s_axis_tkeep <= 0;
+        s_axis_tvalid <= 1'b1;
+        s_axis_tlast <= 1;
+        s_axis_tid <= 1;
+        s_axis_tdest <= 0;
+        s_axis_tuser <= 0;
+        m_axis_tready <= 0;
+    end
+    else if(cycle == 2) begin
+        s_axis_tdata <= 2;
+        s_axis_tkeep <= 0;
+        s_axis_tvalid <= 1'b1;
+        s_axis_tlast <= 1;
+        s_axis_tid <= 1;
+        s_axis_tdest <= 0;
+        s_axis_tuser <= 0;
+        m_axis_tready <= 0;
+    end
+    else if(cycle == 3) begin
+        s_axis_tdata <= 3;
+        s_axis_tkeep <= 0;
+        s_axis_tvalid <= 1'b1;
+        s_axis_tlast <= 1;
+        s_axis_tid <= 1;
+        s_axis_tdest <= 0;
+        s_axis_tuser <= 0;
+        m_axis_tready <= 0;
+    end
+    else if(cycle == 4) begin
+        s_axis_tdata <= 4;
+        s_axis_tkeep <= 0;
+        s_axis_tvalid <= 1'b1;
+        s_axis_tlast <= 0;
+        s_axis_tid <= 1;
+        s_axis_tdest <= 0;
+        s_axis_tuser <= 0;
+        m_axis_tready <= 0;
+    end
+    else if (cycle == 5) begin
+        s_axis_tdata <= 5;
+        s_axis_tkeep <= 0;
+        s_axis_tvalid <= 1'b1;
+        s_axis_tlast <= 0;
+        s_axis_tid <= 1;
+        s_axis_tdest <= 0;
+        s_axis_tuser <= 0;
+        m_axis_tready <= 0;
+    end
+    else if (cycle == 6) begin
+        s_axis_tdata <= 6;
+        s_axis_tkeep <= 0;
+        s_axis_tvalid <= 1'b1;
+        s_axis_tlast <= 0;
+        s_axis_tid <= 1;
+        s_axis_tdest <= 0;
+        s_axis_tuser <= 0;
+        m_axis_tready <= 0;
+    end
+    else if(cycle == 7) begin
+        m_axis_tready <= 1;
+        s_axis_tvalid <= 1'b0;
+        s_axis_tlast <= 0;
+    end
+    else if(cycle == 8) begin
+        m_axis_tready <= 1;
+        s_axis_tvalid <= 1'b1;
+        s_axis_tlast <= 0;
+    end
+    else if(cycle == 9) begin
+        s_axis_tlast <= 1'b1;
+    end
+    else if (cycle == 10) begin
+        s_axis_tlast <= 1'b0;
+        s_axis_tdata <= 7;
+    end
+    else if (cycle == 14) begin
+        $finish;
+    end
+end
 
 always @(*) begin
     if(m_axis_tdata==26'd6) begin

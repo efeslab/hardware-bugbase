@@ -2,12 +2,12 @@
 
 **Source:** Verilog-axis(Verilog AXI Stream Components): https://github.com/alexforencich/verilog-axis/commit/a9c04a465150ae5fc9cd8f32906213d9ba9afb06
 
-This bug is caused by failing to keep value in the register `drop_frame_reg`. Because the packets must be dropped at frame granularity, `drop_frame_next` should have the default value of `drop_frame_reg` at the begining of the following always block.
+This bug is caused by failing to keep value in the register `drop_frame_reg`. Because the packets must be dropped at frame granularity, `drop_frame_next` should have the default value of `drop_frame_reg` at the beginning of the following always block.
 
 
 When an axis-FIFO buffer is full, it will stop writing new packets from the input.
 
-`drop_frame_reg` will be truned on and the FIFO should stop storing anything from the input until the `tlast` is set on (the current frame is finishing).
+`drop_frame_reg` will be turned on and the FIFO should stop storing anything from the input until the `tlast` is set on (the current frame is finishing).
 
 So `drop_frame_reg` should be continuously be 1 until `tlast` rises.
 The value should be “kept” in reg.
